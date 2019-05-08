@@ -1,5 +1,6 @@
 package org.godfreyslanding;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.IOException;
@@ -44,6 +45,8 @@ public class World {
 
 	public void draw(Graphics2D g) {
 		entities.forEach(e -> e.draw(g));
+		g.setColor(Color.black);
+		g.drawRect(0, 0, 800, 800);
 	}
 
 }

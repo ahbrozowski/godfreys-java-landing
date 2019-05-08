@@ -14,7 +14,7 @@ public class Square implements Entity{
 	public Square() {
 		x = 400;
 		y = 400;
-		vx = 0;
+		vx = 1;
 		vy = 2;
 		color = Color.red;
 	}
@@ -22,6 +22,12 @@ public class Square implements Entity{
 	public void update() {
 		x += vx;
 		y += vy;
+		if (x <= 10 || 790 <= x) {
+			vx = -vx;
+		}
+		if (y <= 10 || 790 <= y) {
+			vy = - vy;
+		}
 	}
 
 	public void draw(Graphics2D g) {
