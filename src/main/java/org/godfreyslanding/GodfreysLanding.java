@@ -1,9 +1,8 @@
 package org.godfreyslanding;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,13 +21,12 @@ public class GodfreysLanding extends JPanel {
 	public static final int MILLIS_PER_FRAME = 1000 / FRAME_RATE; 
 	
 	
-	int tick;
-	Rectangle bird;
+	World world;
 	
 	
-	public GodfreysLanding() {
+	public GodfreysLanding() throws IOException {
 		
-		bird = new Rectangle(WIDTH / 2 - 10, HEIGHT / 2 - 10, 20, 20);
+		world = new World();
 		
 		JFrame frame = new JFrame();
 		frame.add(this);
@@ -43,13 +41,7 @@ public class GodfreysLanding extends JPanel {
 	}
 	
 	private void tick() {
-		tick++;
-		
-		if (tick % 1 == 0) {
-			bird.y += 2;
-		}
-		
-		
+		world.update();
 		this.repaint();
 	}
 	
@@ -58,14 +50,12 @@ public class GodfreysLanding extends JPanel {
 		super.paintComponent(graphics);
 		
 		Graphics2D g = (Graphics2D)graphics;
-		g.setColor(Color.red);
-		g.fill(bird);
-		
+		world.draw(g);
 	}
 
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		new GodfreysLanding();
 	}
 
