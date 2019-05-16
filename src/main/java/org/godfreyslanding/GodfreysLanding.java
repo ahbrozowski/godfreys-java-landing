@@ -3,7 +3,6 @@ package org.godfreyslanding;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -16,6 +15,8 @@ public class GodfreysLanding extends JPanel {
 	public static final int WIDTH = 800;
 	
 	public static final int HEIGHT = 800;
+	
+	public static final int TITLE_BAR_HEIGHT = 23;
 	
 	public static final int FRAME_RATE = 50;
 	
@@ -33,10 +34,10 @@ public class GodfreysLanding extends JPanel {
 		world = new World();
 		
 		JFrame frame = new JFrame();
-		frame.add(this);
 		frame.setTitle("Godfrey's Landing");
-		frame.setSize(WIDTH,HEIGHT);
+		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(this);
 		frame.setVisible(true);
 		
 		Timer timer = new Timer(MILLIS_PER_FRAME, e -> this.tick());
