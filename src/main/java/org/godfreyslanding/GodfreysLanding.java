@@ -31,8 +31,7 @@ public class GodfreysLanding extends JPanel {
 	
 	public GodfreysLanding() throws IOException {
 		
-		world = new World();
-		
+		world = new World(); 
 		JFrame frame = new JFrame();
 		frame.setTitle("Godfrey's Landing");
 		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
@@ -40,14 +39,25 @@ public class GodfreysLanding extends JPanel {
 		frame.add(this);
 		frame.setVisible(true);
 		
-		Timer timer = new Timer(MILLIS_PER_FRAME, e -> this.tick());
+		Timer timer = new Timer(MILLIS_PER_FRAME, e -> {
+			try {
+				this.tick();
+			} catch (IOException e1) {
+				System.out.print("CRASHING!!!!!");
+				
+			}
+		});
 		timer.start();
-		
+		frame.addKeyListener(world.getSquare().getMover());
+		frame.addKeyListener(world.getSquare().getJumper());
+		frame.addMouseListener(world.getMouse());
+
+
 		
 		
 	}
 	
-	private void tick() {
+	private void tick() throws IOException {
 		world.update();
 		this.repaint();
 	}	

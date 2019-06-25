@@ -11,7 +11,6 @@ public class Block implements Entity{
 	int y;
 	Image img;
 	int tick = 0;
-	
 	public Block(int x, int y, Image img) throws IOException {
 		this.x = x;
 		this.y = y;
@@ -19,8 +18,12 @@ public class Block implements Entity{
 	}
 	
 	@Override
-	public Rectangle bounds() {
+	public Rectangle getBounds() {
 		return new Rectangle(x, y, img.getWidth(null), img.getHeight(null));
+	}
+	
+	public boolean clickedOn(int x, int y) {
+		return this.getBounds().contains(x, y);
 	}
 
 	public void update(World w) {
@@ -29,7 +32,12 @@ public class Block implements Entity{
 	public void draw(Graphics2D g) {
 		g.drawImage(img, x, y, null);
 	}
-
-
 	
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
 }
