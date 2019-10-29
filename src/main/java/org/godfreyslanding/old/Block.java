@@ -1,4 +1,4 @@
-package org.godfreyslanding;
+package org.godfreyslanding.old;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -6,7 +6,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 
 public class Block implements Entity{
-
 	int x;
 	int y;
 	Image img;

@@ -20,6 +20,10 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:23.0'
+    // https://mvnrepository.com/artifact/javax.vecmath/vecmath
+	compile group: 'javax.vecmath', name: 'vecmath', version: '1.5.2'
+	compile group: 'org.jbox2d', name: 'jbox2d-library', version: '2.2.1.1'
+	
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'

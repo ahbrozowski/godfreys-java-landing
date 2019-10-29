@@ -1,4 +1,4 @@
-package org.godfreyslanding;
+package org.godfreyslanding.old;
 
 
 import java.awt.Graphics;
@@ -15,16 +15,16 @@ public class GodfreysLanding extends JPanel {
 
 	public static final int WIDTH = 800;
 	
-	public static final int HEIGHT = 600;
+	public static final int HEIGHT = 800;
 	
 	public static final int TITLE_BAR_HEIGHT = 23;
 	
-	public static final int FRAME_RATE = 60;
+	public static final int FRAME_RATE = 50;
 	
 	public static final int MILLIS_PER_FRAME = 1000 / FRAME_RATE; 
 	
 	
-	GLWorld world;
+	World world;
 
 	double avgDrawTime = 0;
 	double drawCount = 0;
@@ -32,7 +32,7 @@ public class GodfreysLanding extends JPanel {
 	
 	public GodfreysLanding() throws IOException {
 		
-		world = new GLWorld(); 
+		world = new World(); 
 		JFrame frame = new JFrame();
 		frame.setTitle("Godfrey's Landing");
 		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
@@ -49,12 +49,17 @@ public class GodfreysLanding extends JPanel {
 			}
 		});
 		timer.start();
+		frame.addKeyListener(world.getSquare().getMover());
+		frame.addKeyListener(world.getSquare().getJumper());
+		frame.addMouseListener(world.getMouse());
+
+
 		
 		
 	}
 	
 	private void tick() throws IOException {
-		world.update(MILLIS_PER_FRAME/1000.0f, 8, 3);
+		world.update();
 		this.repaint();
 	}	
 	
@@ -65,6 +70,7 @@ public class GodfreysLanding extends JPanel {
 		super.paintComponent(graphics);
 		
 		Graphics2D g = (Graphics2D)graphics;
+		g.scale(10, 10);
 		world.draw(g);
 		
 		boolean print = drawCount % FRAME_RATE == 0;

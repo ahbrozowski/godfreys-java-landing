@@ -1,4 +1,4 @@
-package org.godfreyslanding;
+package org.godfreyslanding.old;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -6,6 +6,11 @@ import java.awt.Rectangle;
 public class Slime implements Sprite{
 	int x;
 	int y;
+	
+	public Slime(int x, int y) {
+		this.x = x;
+		this.y = y;
+	} 
 	
 	@Override
 	public Rectangle getBounds() {
