@@ -54,7 +54,7 @@ public class World  {
 	public Mouse getMouse() {
 		return m;
 	}
-	public void clicked(Image img) throws IOException {
+	public void clicked(Image img) {
 		int x = m.getX();
 		int y = m.getY();
 		int blockX = x - (x % 10);
@@ -141,12 +141,7 @@ public class World  {
 				e1.printStackTrace();
 			}
 		});
-		try {
-			clicked(images[1]);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		clicked(images[1]);
 		
 	}
 

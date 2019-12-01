@@ -1,8 +1,13 @@
 package org.godfreyslanding;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -12,20 +17,23 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
 public class GLWorld  {
-	
+	Image image;
 	final Vec2 gravity;
 	final World world;
+	Player myPlayer;
+	List<Block> blocks = new ArrayList<Block>();
 	
-	List<Player> players = new ArrayList<Player>();
-	
-	public GLWorld() {
+	public GLWorld() throws IOException {
 		gravity = new Vec2(0.0f, 10.0f);
 		world = new World(gravity);
 		
 		initEntities();
 	}
 	
-	public void initEntities() {
+	public void initEntities() throws IOException {
+		
+		image = ImageIO.read( ClassLoader.getSystemResource("images/TitleGL.png"));
+		
 		
 		BodyDef groundBodyDef = new BodyDef();
 		groundBodyDef.position.set(0.0f, 70.0f);
@@ -38,13 +46,14 @@ public class GLWorld  {
 		
 		groundBody.createFixture(groundBox, 0.0f);
 		
-		
+		myPlayer = new Player(20,20,2.0f,2.0f);
+		myPlayer.init(this);
 		for(int i = 0; i < 10; i++) {
-			Player p = new Player((40.0f + i), 40.0f - 4*i, 2.0f, 2.0f);
-			p.init(this);
-			players.add(p);
+			Block b = new Block((0.0f+(2*i)), 60.0f, 2.0f, 2.0f);
+			b.init(this);
+			blocks.add(b);
 		}
-
+		
 		
 	}
 
@@ -61,11 +70,47 @@ public class GLWorld  {
 		world.step(timeStep, velocityIterations, positionIterations);
 		
 	}
-
-	public void draw(Graphics2D g) {
-		for(Player p : players) {
-			p.draw(g);
+	
+	public void draw(Graphics2D g, int width, int height) {
+		Vec2 position = myPlayer.getPosition();
+		g.translate((width/2)-10*position.x, (height/2)-10*position.y);
+		g.drawImage(image, 0, 0, null);
+		//System.err.printf("%4.2f %4.2f %n",position.x, position.y);
+		for(Block b : blocks) {
+			b.draw(g,false);
 		}
+		myPlayer.draw(g,true);
+	}
+
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_SPACE){
+            System.out.println("Key Pressed" + e.getKeyCode());
+            myPlayer.jump();      
+        }
+		
+        if(e.getKeyCode() == KeyEvent.VK_D){
+            System.out.println("Key Pressed" + e.getKeyCode());
+            myPlayer.startRight();
+        }
+        
+        if(e.getKeyCode() == KeyEvent.VK_A){
+            System.out.println("Key Pressed" + e.getKeyCode());
+            myPlayer.startLeft();
+        }
+
+
+		
+	}
+
+	public void keyReleased(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_D){
+            System.out.println("Key Released" + e.getKeyCode());
+            myPlayer.stopRight();
+        }
+		if(e.getKeyCode() == KeyEvent.VK_A){
+            System.out.println("Key Released" + e.getKeyCode());
+            myPlayer.stopLeft();
+        }
 	}
 	
 	

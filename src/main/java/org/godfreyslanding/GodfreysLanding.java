@@ -3,6 +3,8 @@ package org.godfreyslanding;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -40,20 +42,33 @@ public class GodfreysLanding extends JPanel {
 		frame.add(this);
 		frame.setVisible(true);
 		
-		Timer timer = new Timer(MILLIS_PER_FRAME, e -> {
-			try {
-				this.tick();
-			} catch (IOException e1) {
-				System.out.print("CRASHING!!!!!");
-				
+		frame.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
 			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				GodfreysLanding.this.world.keyPressed(e);
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				GodfreysLanding.this.world.keyReleased(e);
+			}
+			
+		});
+		
+		Timer timer = new Timer(MILLIS_PER_FRAME, e -> {
+			this.tick();
 		});
 		timer.start();
 		
 		
 	}
 	
-	private void tick() throws IOException {
+	private void tick() {
 		world.update(MILLIS_PER_FRAME/1000.0f, 8, 3);
 		this.repaint();
 	}	
@@ -65,7 +80,7 @@ public class GodfreysLanding extends JPanel {
 		super.paintComponent(graphics);
 		
 		Graphics2D g = (Graphics2D)graphics;
-		world.draw(g);
+		world.draw(g,this.getWidth(),this.getHeight());
 		
 		boolean print = drawCount % FRAME_RATE == 0;
 	
@@ -84,7 +99,7 @@ public class GodfreysLanding extends JPanel {
 
 
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException{
 		new GodfreysLanding();
 	}
 

@@ -11,16 +11,14 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
-public class Player {
+public class Block {
     
 	Body body;
 	float x; 
 	float y;
 	float width;
 	float height;
-	boolean canJump;
-	int moving;
-	public Player(float x, float y, float width, float height) {
+	public Block(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -28,49 +26,21 @@ public class Player {
 	}
 	
 	public void init(GLWorld glworld) {
-		moving = 0;
-		canJump = true;
 		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DYNAMIC;
+		bodyDef.type = BodyType.STATIC;
 		bodyDef.position.set(this.x, this.y);
 		bodyDef.fixedRotation = true;
-		PolygonShape dynamicBox = new PolygonShape();
-		dynamicBox.setAsBox(this.width/2.0f, this.height/2.0f);
-		;
+		PolygonShape box = new PolygonShape();
+		box.setAsBox(this.width/2.0f, this.height/2.0f);
+		
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = dynamicBox;
-		fixtureDef.density = 1.0f;
-		fixtureDef.restitution = .3f;
+		fixtureDef.shape = box;
 		
 		body = glworld.createBody(bodyDef, fixtureDef);
 		
 	}
-	void move() {
-		Vec2 vel = body.getLinearVelocity();
-		int LEFT = 2;
-		int RIGHT = 1;
-		if(Math.abs(vel.x) < 15) {
-			if(moving == RIGHT) {
-				if(vel.x < 0) {
-				body.setLinearVelocity(new Vec2(0, vel.y));
-				}
-				body.applyForce(new Vec2(50,0), body.getWorldCenter());
-			}
-			else if(moving == LEFT) {
-				if(vel.x > 0) {
-					body.setLinearVelocity(new Vec2(0, vel.y));
-				}
-				body.applyForce(new Vec2(-50,0), body.getWorldCenter());			
-			}
-		}
-	}
-	
-	void jump() {
-		body.applyLinearImpulse(new Vec2(0,-50), body.getWorldCenter());
-	} 
 	
 	public void draw(Graphics2D g,boolean print) {
-		move();
 		Vec2 position = body.getPosition();
 		float angle = body.getAngle();
 		if(print) {
@@ -85,7 +55,7 @@ public class Player {
 		int w = Math.round(10*width);
 		int h = Math.round(10*height);
 		Color c = g.getColor();
-		g.setColor(Color.RED);
+		g.setColor(Color.GREEN);
 		g.fillRect(x, y, w, h);
 		g.setColor(c);
 		
@@ -99,31 +69,6 @@ public class Player {
 		return body.getPosition();
 	}
 
-	public void startRight() {
-		moving = 1;
-		
-		
-	}
 
-	public void startLeft() {
-		moving = 2;
-	
-		
-	}
-	
-	public void stopLeft() {
-		moving = 0;
-		Vec2 vel = body.getLinearVelocity();
-		body.setLinearVelocity(new Vec2(0, vel.y));
-		
-	}
-
-	public void stopRight() {
-		moving = 0;
-		Vec2 vel = body.getLinearVelocity();
-		body.setLinearVelocity(new Vec2(0, vel.y));	
-		
-		
-	}
 
 }

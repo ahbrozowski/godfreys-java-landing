@@ -10,7 +10,7 @@ public class Block implements Entity{
 	int y;
 	Image img;
 	int tick = 0;
-	public Block(int x, int y, Image img) throws IOException {
+	public Block(int x, int y, Image img) {
 		this.x = x;
 		this.y = y;
 		this.img = img;
