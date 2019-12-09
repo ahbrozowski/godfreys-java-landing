@@ -23,7 +23,12 @@ dependencies {
     // https://mvnrepository.com/artifact/javax.vecmath/vecmath
 	compile group: 'javax.vecmath', name: 'vecmath', version: '1.5.2'
 	compile group: 'org.jbox2d', name: 'jbox2d-library', version: '2.2.1.1'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.1'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
 	
+ 
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'

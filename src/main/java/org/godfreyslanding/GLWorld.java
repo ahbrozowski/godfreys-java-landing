@@ -17,16 +17,18 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
 public class GLWorld  {
+	WorldData w;
 	Image image;
 	final Vec2 gravity;
 	final World world;
 	Player myPlayer;
-	List<Block> blocks = new ArrayList<Block>();
+	Block[][] blocks;
 	
-	public GLWorld() throws IOException {
+	
+	public GLWorld(WorldData w) throws IOException {
 		gravity = new Vec2(0.0f, 10.0f);
 		world = new World(gravity);
-		
+		this.w = w;
 		initEntities();
 	}
 	
@@ -35,7 +37,8 @@ public class GLWorld  {
 		image = ImageIO.read( ClassLoader.getSystemResource("images/TitleGL.png"));
 		
 		
-		BodyDef groundBodyDef = new BodyDef();
+		
+		/*BodyDef groundBodyDef = new BodyDef();
 		groundBodyDef.position.set(0.0f, 70.0f);
 		
 		Body groundBody = world.createBody(groundBodyDef);
@@ -44,14 +47,17 @@ public class GLWorld  {
 		
 		groundBox.setAsBox(80.0f, 10.0f);
 		
-		groundBody.createFixture(groundBox, 0.0f);
+		groundBody.createFixture(groundBox, 0.0f);*/
 		
 		myPlayer = new Player(20,20,2.0f,2.0f);
 		myPlayer.init(this);
-		for(int i = 0; i < 10; i++) {
-			Block b = new Block((0.0f+(2*i)), 60.0f, 2.0f, 2.0f);
-			b.init(this);
-			blocks.add(b);
+		blocks = w.getBlocks();
+		for(int x = 0; x < blocks.length; x++) {
+			for(int y = 0; y < blocks[x].length; y++) {
+				if(blocks[x][y] != null) {
+					blocks[x][y].init(this);
+				}
+			}
 		}
 		
 		
@@ -75,13 +81,18 @@ public class GLWorld  {
 		Vec2 position = myPlayer.getPosition();
 		g.translate((width/2)-10*position.x, (height/2)-10*position.y);
 		g.drawImage(image, 0, 0, null);
-		//System.err.printf("%4.2f %4.2f %n",position.x, position.y);
-		for(Block b : blocks) {
-			b.draw(g,false);
+		//System.err.printf("%4.2f %4.2f %n",position.x, position.y);Block[][] blocks = w.getBlocks();
+		for(int x = 0; x < blocks.length; x++) {
+			for(int y = 0; y < blocks[x].length; y++) {
+				if(blocks[x][y] != null) {
+					blocks[x][y].draw(g,true);
+				}
+			}
 		}
 		myPlayer.draw(g,true);
 	}
 
+	
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_SPACE){
             System.out.println("Key Pressed" + e.getKeyCode());

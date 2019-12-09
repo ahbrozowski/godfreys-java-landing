@@ -5,11 +5,18 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GodfreysLanding extends JPanel {
 	
@@ -25,16 +32,31 @@ public class GodfreysLanding extends JPanel {
 	
 	public static final int MILLIS_PER_FRAME = 1000 / FRAME_RATE; 
 	
-	
 	GLWorld world;
 
 	double avgDrawTime = 0;
 	double drawCount = 0;
 	
-	
+	private void writeJSON(WorldData world) throws JsonGenerationException, JsonMappingException, IOException{
+	      ObjectMapper mapper = new ObjectMapper();	
+	      mapper.writeValue(new File("World.json"), world);
+	      
+	   }
+
+	   private WorldData readJSON() throws JsonParseException, JsonMappingException, IOException{
+	      ObjectMapper mapper = new ObjectMapper();
+	      WorldData world = mapper.readValue(new File("World.json"), WorldData.class);
+	      return world;
+	   }
+	   
 	public GodfreysLanding() throws IOException {
+		if(!(new File("World.json").exists())) {
+			createWorld(100,100);
+		}
+		WorldData w = readJSON();
+		System.out.println(w);
+		world = new GLWorld(w);
 		
-		world = new GLWorld(); 
 		JFrame frame = new JFrame();
 		frame.setTitle("Godfrey's Landing");
 		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
@@ -66,6 +88,26 @@ public class GodfreysLanding extends JPanel {
 		timer.start();
 		
 		
+	}
+	
+	public void createWorld(int xsize, int ysize) throws JsonGenerationException, JsonMappingException, IOException {
+		WorldData w = new WorldData();
+		w.setName("world");
+		Block[][] blocks = new Block[xsize][ysize];
+		int rand = (int)((Math.random() * 6)+(Math.random() * 6))/2 - 4;
+		int last = ysize/2;
+		int now = last+rand;
+		for(int x = 0; x < blocks.length; x++) {
+			for(int y = (now); y < blocks[x].length; y++) {
+				blocks[x][y] = new Block(x, y, 10,10);
+			}
+			last = now;
+			rand = (int)(Math.random() * 6) - 3;
+			now = last+rand;
+		}
+		w.setBlocks(blocks);
+		System.out.println(w);
+		writeJSON(w);
 	}
 	
 	private void tick() {
