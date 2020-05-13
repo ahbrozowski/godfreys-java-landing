@@ -1,4 +1,4 @@
-package org.godfreyslanding.old;
+package org.godfreyslanding.older;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

@@ -1,4 +1,4 @@
-package org.godfreyslanding;
+package org.godfreyslanding.old;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -11,47 +11,66 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class Block {
+public class Player {
     
-	@Override
-	public String toString() {
-		return "Block [body=" + body + ", x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
-	}
-
 	Body body;
 	float x; 
 	float y;
 	float width;
 	float height;
-	@JsonCreator
-	public Block(@JsonProperty("x")float x, @JsonProperty("y")float y, @JsonProperty("width")float width, @JsonProperty("height")float height) {
+	boolean canJump;
+	int moving;
+	public Player(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		
 	}
 	
 	public void init(GLWorld glworld) {
+		moving = 0;
+		canJump = true;
 		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.STATIC;
+		bodyDef.type = BodyType.DYNAMIC;
 		bodyDef.position.set(this.x, this.y);
 		bodyDef.fixedRotation = true;
-		PolygonShape box = new PolygonShape();
-		box.setAsBox(this.width/2.0f, this.height/2.0f);
-		
+		PolygonShape dynamicBox = new PolygonShape();
+		dynamicBox.setAsBox(this.width/2.0f, this.height/2.0f);
+		;
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = box;
+		fixtureDef.shape = dynamicBox;
+		fixtureDef.density = 1.0f;
+		fixtureDef.restitution = .3f;
 		
 		body = glworld.createBody(bodyDef, fixtureDef);
 		
 	}
+	void move() {
+		Vec2 vel = body.getLinearVelocity();
+		int LEFT = 2;
+		int RIGHT = 1;
+		if(Math.abs(vel.x) < 15) {
+			if(moving == RIGHT) {
+				if(vel.x < 0) {
+				body.setLinearVelocity(new Vec2(0, vel.y));
+				}
+				body.applyForce(new Vec2(50,0), body.getWorldCenter());
+			}
+			else if(moving == LEFT) {
+				if(vel.x > 0) {
+					body.setLinearVelocity(new Vec2(0, vel.y));
+				}
+				body.applyForce(new Vec2(-50,0), body.getWorldCenter());			
+			}
+		}
+	}
+	
+	void jump() {
+		body.applyLinearImpulse(new Vec2(0,-50), body.getWorldCenter());
+	} 
 	
 	public void draw(Graphics2D g,boolean print) {
+		move();
 		Vec2 position = body.getPosition();
 		float angle = body.getAngle();
 		if(print) {
@@ -66,7 +85,7 @@ public class Block {
 		int w = Math.round(10*width);
 		int h = Math.round(10*height);
 		Color c = g.getColor();
-		g.setColor(Color.GREEN);
+		g.setColor(Color.RED);
 		g.fillRect(x, y, w, h);
 		g.setColor(c);
 		
@@ -75,10 +94,36 @@ public class Block {
 
 		
 	}
-	@JsonIgnore
+
 	public Vec2 getPosition() {
 		return body.getPosition();
+	}
 
+	public void startRight() {
+		moving = 1;
+		
+		
+	}
+
+	public void startLeft() {
+		moving = 2;
+	
+		
+	}
+	
+	public void stopLeft() {
+		moving = 0;
+		Vec2 vel = body.getLinearVelocity();
+		body.setLinearVelocity(new Vec2(0, vel.y));
+		
+	}
+
+	public void stopRight() {
+		moving = 0;
+		Vec2 vel = body.getLinearVelocity();
+		body.setLinearVelocity(new Vec2(0, vel.y));	
+		
+		
 	}
 
 	public float getX() {
@@ -112,7 +157,5 @@ public class Block {
 	public void setHeight(float height) {
 		this.height = height;
 	}
-
-
 
 }

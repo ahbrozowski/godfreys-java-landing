@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Block {
+public class WorldTest {
     
 	@Override
 	public String toString() {
@@ -28,7 +28,7 @@ public class Block {
 	float width;
 	float height;
 	@JsonCreator
-	public Block(@JsonProperty("x")float x, @JsonProperty("y")float y, @JsonProperty("width")float width, @JsonProperty("height")float height) {
+	public WorldTest(@JsonProperty("x")float x, @JsonProperty("y")float y, @JsonProperty("width")float width, @JsonProperty("height")float height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -44,10 +44,11 @@ public class Block {
 		bodyDef.allowSleep = true;
 		bodyDef.awake = false;
 		PolygonShape box = new PolygonShape();
-		box.setAsBox(this.width/2.0f, this.height/2.0f);
+		box.setAsBox(this.width/2.0f, this.height/2.0f, this.getPosition(), 0);
 		
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = box;
+		
 		
 		body = glworld.createBody(bodyDef, fixtureDef);
 		

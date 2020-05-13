@@ -1,4 +1,4 @@
-package org.godfreyslanding.old;
+package org.godfreyslanding.older;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;

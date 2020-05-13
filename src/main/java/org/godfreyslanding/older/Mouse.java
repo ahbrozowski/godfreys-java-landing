@@ -1,4 +1,4 @@
-package org.godfreyslanding.old;
+package org.godfreyslanding.older;
 
 import java.awt.Frame;
 import java.awt.event.MouseEvent;

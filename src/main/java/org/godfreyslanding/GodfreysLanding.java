@@ -1,69 +1,39 @@
 package org.godfreyslanding;
 
-
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-public class GodfreysLanding extends JPanel {
-	
-	private static final long serialVersionUID = 1L;
-
+public class GodfreysLanding extends JPanel{
 	public static final int WIDTH = 800;
-	
 	public static final int HEIGHT = 600;
-	
 	public static final int TITLE_BAR_HEIGHT = 23;
-	
 	public static final int FRAME_RATE = 60;
-	
 	public static final int MILLIS_PER_FRAME = 1000 / FRAME_RATE; 
 	
-	GLWorld world;
-
+	World world;
+	static WorldData w;
 	double avgDrawTime = 0;
 	double drawCount = 0;
 	
-	private void writeJSON(WorldData world) throws JsonGenerationException, JsonMappingException, IOException{
-	      ObjectMapper mapper = new ObjectMapper();	
-	      mapper.writeValue(new File("World.json"), world);
-	      
-	   }
-
-	   private WorldData readJSON() throws JsonParseException, JsonMappingException, IOException{
-	      ObjectMapper mapper = new ObjectMapper();
-	      WorldData world = mapper.readValue(new File("World.json"), WorldData.class);
-	      return world;
-	   }
-	   
-	public GodfreysLanding() throws IOException {
-		if(!(new File("World.json").exists())) {
-			createWorld(100,100);
-		}
-		WorldData w = readJSON();
-		System.out.println(w);
-		world = new GLWorld(w);
-		
+	public GodfreysLanding() {
+		w = new WorldData(new Body[1000][1000]);
+		world = new World(w);
 		JFrame frame = new JFrame();
 		frame.setTitle("Godfrey's Landing");
 		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(this);
 		frame.setVisible(true);
-		
+		frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		frame.addKeyListener(new KeyListener() {
 
 			@Override
@@ -81,38 +51,55 @@ public class GodfreysLanding extends JPanel {
 			}
 			
 		});
+		int width = this.getWidth();
+		int height = this.getHeight();
+		
+		frame.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				GodfreysLanding.this.world.mousePressed(e);				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				GodfreysLanding.this.world.mouseReleased(e);
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		
 		Timer timer = new Timer(MILLIS_PER_FRAME, e -> {
-			this.tick();
+			GodfreysLanding.this.tick();
 		});
 		timer.start();
-		
+	//	this.tick();
 		
 	}
 	
-	public void createWorld(int xsize, int ysize) throws JsonGenerationException, JsonMappingException, IOException {
-		WorldData w = new WorldData();
-		w.setName("world");
-		Block[][] blocks = new Block[xsize][ysize];
-		int rand = (int)((Math.random() * 6)+(Math.random() * 6))/2 - 4;
-		int last = ysize/2;
-		int now = last+rand;
-		for(int x = 0; x < blocks.length; x++) {
-			for(int y = (now); y < blocks[x].length; y++) {
-				blocks[x][y] = new Block(x, y, 10,10);
-			}
-			last = now;
-			rand = (int)(Math.random() * 6) - 3;
-			now = last+rand;
-		}
-		w.setBlocks(blocks);
-		System.out.println(w);
-		writeJSON(w);
-	}
 	
 	private void tick() {
-		world.update(MILLIS_PER_FRAME/1000.0f, 8, 3);
+		world.update(MILLIS_PER_FRAME/1000.0f);
 		this.repaint();
+		
 	}	
 	
 	@Override
@@ -138,11 +125,11 @@ public class GodfreysLanding extends JPanel {
 		}
 		
 	}
-
-
-
-	public static void main(String[] args) throws IOException{
+	
+	
+	public static void main(String[] args) throws InterruptedException {
 		new GodfreysLanding();
+		Thread.sleep(1000000);
 	}
 
 }

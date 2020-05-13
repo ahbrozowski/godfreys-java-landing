@@ -1,4 +1,4 @@
-package org.godfreyslanding;
+package org.godfreyslanding.old;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -23,9 +23,11 @@ public class GLWorld  {
 	final World world;
 	Player myPlayer;
 	Block[][] blocks;
-	
-	
+	ArrayList<Block> oldBlocks = new ArrayList<Block>();
+	ArrayList<Block> madeBlocks = new ArrayList<Block>();
+	float lastX;
 	public GLWorld(WorldData w) throws IOException {
+		blocks = w.getBlocks();
 		gravity = new Vec2(0.0f, 10.0f);
 		world = new World(gravity);
 		this.w = w;
@@ -33,36 +35,20 @@ public class GLWorld  {
 	}
 	
 	public void initEntities() throws IOException {
-		
+		blocks = w.getBlocks();
 		image = ImageIO.read( ClassLoader.getSystemResource("images/TitleGL.png"));
-		
-		
-		
-		/*BodyDef groundBodyDef = new BodyDef();
-		groundBodyDef.position.set(0.0f, 70.0f);
-		
-		Body groundBody = world.createBody(groundBodyDef);
-		
-		PolygonShape groundBox = new PolygonShape();
-		
-		groundBox.setAsBox(80.0f, 10.0f);
-		
-		groundBody.createFixture(groundBox, 0.0f);*/
-		
+	
 		myPlayer = new Player(20,20,2.0f,2.0f);
 		myPlayer.init(this);
-		blocks = w.getBlocks();
 		for(int x = 0; x < blocks.length; x++) {
-			for(int y = 0; y < blocks[x].length; y++) {
+			for(int y = 0; y < blocks[x].length; y++ ) {
 				if(blocks[x][y] != null) {
 					blocks[x][y].init(this);
 				}
 			}
 		}
 		
-		
 	}
-
 	public Body createBody(BodyDef bodyDef, FixtureDef fixtureDef) {
 		
 		Body body = this.world.createBody(bodyDef);
@@ -79,16 +65,39 @@ public class GLWorld  {
 	
 	public void draw(Graphics2D g, int width, int height) {
 		Vec2 position = myPlayer.getPosition();
+
 		g.translate((width/2)-10*position.x, (height/2)-10*position.y);
 		g.drawImage(image, 0, 0, null);
-		//System.err.printf("%4.2f %4.2f %n",position.x, position.y);Block[][] blocks = w.getBlocks();
-		for(int x = 0; x < blocks.length; x++) {
+		
+		int lBound = (int) (position.x-30);
+		int rBound = (int) (position.x+30);
+		if(lBound < 0 ) {
+			 lBound = 0;
+		}
+		if(rBound > blocks.length ) {
+			rBound = blocks.length;
+		}
+		int min = 10000;
+		for(int x = lBound; x < rBound; x++) {
+			if(x < min) {
+				min = x;
+			}
+			lBound = (int) (position.x-25);
+			rBound = (int) (position.x+25);
+			if(lBound < 0 ) {
+				 lBound = 0;
+			}
+			if(rBound > blocks.length ) {
+				rBound = blocks.length;
+			}
+			
 			for(int y = 0; y < blocks[x].length; y++) {
 				if(blocks[x][y] != null) {
 					blocks[x][y].draw(g,true);
 				}
 			}
 		}
+		
 		myPlayer.draw(g,true);
 	}
 
