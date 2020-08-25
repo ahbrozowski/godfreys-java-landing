@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 public class Body {
+	int light = 0;
 	double x;
 	double y;
 	double width;
@@ -111,25 +112,30 @@ public class Body {
 		
 	}
 	
-	public void draw(Graphics2D g, int tabW, int tabH) {
-		AffineTransform old = g.getTransform();
-		try {
-			g.translate(10 * x, 10 * y);
-			// g.rotate(angle);
-			drawHUB(g, tabW, tabH);
-			int x = (int) Math.round(10 * (-this.width / 2.0));
-			int y = (int) Math.round(10 * (-this.height / 2.0));
-			int w = (int) Math.round(10 * width);
-			int h = (int) Math.round(10 * height);
-			Color c = g.getColor();
-			g.setColor(color);
-			g.fillRect(x, y, w, h);
-			g.setColor(c);
-
-		} finally {
-			g.setTransform(old);
-		}
+	public void drawItem(int x, int y, Graphics2D g, int width,int height) {
+		
 	}
+	
+	public void draw(Graphics2D g, int tabW, int tabH) {
+			AffineTransform old = g.getTransform();
+			try {
+				g.translate(10 * x, 10 * y);
+				// g.rotate(angle);
+				drawHUB(g, tabW, tabH);
+
+				int x = (int) Math.round(10 * (-this.width / 2.0));
+				int y = (int) Math.round(10 * (-this.height / 2.0));
+				int w = (int) Math.round(10 * width);
+				int h = (int) Math.round(10 * height);
+				drawItem(x,y, g, tabW, tabH);
+				Color c = g.getColor();
+				g.setColor(color);
+				g.fillRect(x, y, w, h);
+				g.setColor(c);
+			} finally {
+				g.setTransform(old);
+			}
+		}
 	
 	public double getX() {
 		return x;
@@ -179,5 +185,11 @@ public class Body {
 		Item p = new Placeable(true);
 		p.setAmount(n);
 		return p;
+	}
+
+
+	public void colidesBlock(int side, Body b) {
+		// TODO Auto-generated method stub
+		
 	}
 }

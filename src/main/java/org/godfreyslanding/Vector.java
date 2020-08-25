@@ -8,6 +8,7 @@ public class Vector {
 		this.y = y;
 	}
 	
+	
 	public void xReflect() {
 		x = -x;
 	}
@@ -40,6 +41,12 @@ public class Vector {
 		
 	}
 	
+	public void addX(double d) {
+		x = x + d;
+	}
+	public void addY(double d) {
+		y = y + d;
+	}
 	
 	public double getX() {
 		return x;

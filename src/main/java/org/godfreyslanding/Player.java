@@ -10,6 +10,10 @@ public class Player extends Body {
 	boolean movingL = false;
 	boolean colidedR = false;
 	boolean colidedL = false;
+	boolean isInvinc = false;
+	boolean stunned = false;
+	double deceleration = .03;
+	int invinc = 30;
 	int spawnY = 0;
 	int spawnX = 1000;
 	int deathClock = 0;
@@ -17,6 +21,9 @@ public class Player extends Body {
 	Inventory inventory;
 	double maxHealth;
 	double lastX = 0.0;
+	boolean lookingRight = true;
+
+
 	public Player(double x, double y, double width, double height, Vector velocity, Color color, boolean air) {
 		super(x, y, width, height, velocity, color, false, 100);
 		inventory = new Inventory(new Item[10], new Item[20]);
@@ -35,7 +42,7 @@ public class Player extends Body {
 	
 	
 
-
+	@Override
 	public void colidesBlock(int side, Body b) {
 		lastX = x;
 			if(side == 3) {
@@ -64,8 +71,8 @@ public class Player extends Body {
 	}
 	
 	public void jump() {
-		if(canJump) {
-			velocity.setY(-1);
+		if(canJump && !stunned) {
+			velocity.setY(-.8);
 			y += -.1;
 			canJump = false;
 		}
@@ -108,15 +115,45 @@ public class Player extends Body {
 	}
 
 	public void xMovement() {
-		if(!colidedR && movingR) {
+		if(!colidedR && movingR && !stunned) {
 			velocity.setX(.2);
-		} else if(!colidedL && movingL) {
+		} else if(!colidedL && movingL && !stunned) {
 			velocity.setX(-.2); 
+		} else if(!colidedL && !colidedR && !movingR && !movingL && velocity.getX() != 0) {
+			if(Math.abs(velocity.getX()) > deceleration) {
+				if(velocity.getX() < 0) {
+				velocity.addX(deceleration);
+				} else if(velocity.getX() > 0) {
+					velocity.addX(-deceleration);
+				}
+			} else {
+				velocity.setX(0);
+			}
 		}else {
 			velocity.setX(0);
 		}
 	}
 	
+	public boolean isMovingR() {
+		return movingR;
+	}
+
+
+	public void setMovingR(boolean movingR) {
+		this.movingR = movingR;
+	}
+
+
+	public boolean isInvinc() {
+		return isInvinc;
+	}
+
+
+	public void setStunned(boolean isInvinc) {
+		this.isInvinc = isInvinc;
+	}
+
+
 	public void damage(int n) {
 		health = health - n;
 	}
@@ -144,7 +181,25 @@ public class Player extends Body {
 		}
 	}
 	
-		
+	@Override
+	public void drawItem(int x, int y, Graphics2D g, int width, int height) {
+		Item item = inventory.getToolBar()[inventory.getItemSelected()];
+		if(item != null && item.draw) {
+			g.setColor(item.getColor());
+			int sX = x + (int)this.width*5 - (int)item.height*5;
+			int sY = y + (int)this.height*5 - (int)item.height*5;
+			
+			int iX = sX - (int)this.width*5;
+			if(lookingRight) {
+				iX = sX + (int)this.width*5;
+			}
+			
+			g.fillRect(iX, sY - (int)this.height *2, (int)item.getWidth() * 10, (int)item.getHeight() * 10);
+			g.setColor(item.getColor());
+			//System.out.print("airbending slice!");
+		}
+	} 
+	
 	@Override
 	public void draw(Graphics2D g, int width, int height) {
 		// TODO Auto-generated method stub
@@ -153,6 +208,18 @@ public class Player extends Body {
 
 	@Override
 	public void update(boolean gravity) {
+		if(isInvinc && invinc > 0 ) {
+			if(invinc < 20 && stunned) {
+				stunned = false;
+			}
+			invinc--;
+			deceleration = .008;
+		} else{
+			isInvinc = false;
+			invinc = 30;
+			deceleration = .03;
+		}
+		
 		if(health <= 0) {
 			died();
 		}
@@ -191,4 +258,12 @@ public class Player extends Body {
 		}
 	}
 
+	public boolean isLookingRight() {
+		return lookingRight;
+	}
+
+
+	public void setLookingRight(boolean lookingRight) {
+		this.lookingRight = lookingRight;
+	}
 }

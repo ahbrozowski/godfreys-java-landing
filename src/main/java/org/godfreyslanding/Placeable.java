@@ -6,7 +6,7 @@ public class Placeable extends Item {
 	
 	
 	public Placeable(boolean stackable) {
-		super(stackable, 1);
+		super(stackable, 1, false, 0, 1, 1, new Vector(0,0), Color.RED);
 		// TODO Auto-generated constructor stub
 	}
 

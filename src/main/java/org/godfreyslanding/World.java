@@ -17,16 +17,23 @@ public class World {
 	int height;
 	boolean breaking = false;
 	boolean placing = false;
+	boolean swinging = false;
+	int spawnY;
+	Graphics2D g;
+	ArrayList<Entity> entities;
 	public World(WorldData w) {
 		blocks = w.getBlocks();
+		entities = new ArrayList<Entity>();
 		Vector v2 = new Vector(0,0);
-		int spawnY = w.getSpawnY();
+		spawnY = w.getSpawnY();
 		myPlayer = new Player(1000,spawnY,2,2,v2, Color.BLUE, false);
 		Item p = new StoneP();
 		p.setAmount(100);
 		myPlayer.getInventory().addItem(p);
+		myPlayer.getInventory().addItem(new Sword());
 		myPlayer.setSpawn(1000, spawnY);
 		System.out.print(spawnY);
+		entities.add(new Zombie(1020.0, (double)spawnY - 10, myPlayer));
 		//System.out.print(blocks[500][spawnY].getAir());
 	}
 
@@ -64,20 +71,61 @@ public class World {
 					
 			}
 		} 
+		
+		for(int i = 0; i < entities.size(); i++) {
+			Entity ent = entities.get(i);
+			if(myPlayer.collisionCheck(ent) && !myPlayer.isInvinc() && myPlayer.getHealth() > 0) {
+				if(ent.getX() > myPlayer.getX()) {
+					myPlayer.getVelocity().addX(-ent.getKnockback().getX());
+					myPlayer.getVelocity().addY(ent.getKnockback().getY());
+					System.out.println("right");
+				}
+				if(ent.getX() < myPlayer.getX()) {
+					myPlayer.getVelocity().addX(ent.getKnockback().getX());
+					myPlayer.getVelocity().addY(ent.getKnockback().getY());
+					System.out.println("left");
+				}
+				myPlayer.damage(ent.getDamage());
+				System.out.println(ent.getDamage());
+				myPlayer.setStunned(true);
+			}
+			if(ent.getHealth() <= 0) {
+				entities.remove(i);
+			}
+		}
 		if(breaking) {
 			breakBlock();
 		}
 		if(placing) {
 			placeBlock();
 		}
+		if(swinging) {
+			Inventory inv = myPlayer.getInventory();
+	  		Item item = inv.getToolBar()[inv.getItemSelected()];
+			swing();
+	  		item.countUp();
+	  		if(item.getCount() > 30) {
+	  			item.resetCount();
+	  			swinging = false;
+	  		}
+		}
 		
 		if(myPlayer.getVelocity().getY() >= 1) {
 			phaseGuard();
 		}
+		if(myPlayer.getHealth() <= 0) {
+			if(!blocks[500][spawnY/2].getAir()) {
+				blocks[500][spawnY/2].setAir(true);
+				blocks[500][spawnY/2].setColor(Color.CYAN);
+				
+			}
+		}
+		entityPhysics();
 		myPlayer.update(gravity);
 	}
 	
 	public void draw(Graphics2D g, int width, int height) {
+		this.g = g;
 		this.width = width;
 		this.height = height;
 		AffineTransform old = g.getTransform();
@@ -100,6 +148,9 @@ public class World {
 				body.draw(g,width,height);
 			}
 		} 
+		for(Body entity: entities) {
+			entity.draw(g,width,height);
+		}
 		//System.out.println(leftEdge + " " + rightEdge + " " + top + " " + bottom);
 		/* x for(Body[] block: blocks){
 			for(Body body: block){
@@ -178,7 +229,19 @@ public class World {
 			placing = true;
 		}
 		if(e.getButton() == 1) {
-			breaking = true;
+			Inventory inv = myPlayer.getInventory();
+			if (!inv.getToolBar()[inv.getItemSelected()].isStackable()) {
+				swinging = true;
+			} else {
+				breaking = true;
+			}
+		}
+		Point p = MouseInfo.getPointerInfo().getLocation();
+		if(((p.x + 12)/10 + myPlayer.getX() - width/20) > myPlayer.getX()) {
+			myPlayer.setLookingRight(true);
+			
+		} else {
+			myPlayer.setLookingRight(false);
 		}
 	}
 
@@ -247,4 +310,55 @@ public class World {
 		}
 	}
 	
+	
+	public void entityPhysics() {
+		for(int i = 0; i < entities.size(); i++) {
+			boolean gravity = true;
+			int leftEdge = (int)(entities.get(i).getX()/2 - 5);
+			int rightEdge = (int)(entities.get(i).getX()/2 + 6);
+			int top = (int)(entities.get(i).getY()/2 - 5);
+			int bottom = (int)(entities.get(i).getY()/2 + 6);
+			if(leftEdge < 0) { leftEdge = 0;}
+			if(rightEdge >= blocks.length) { rightEdge = blocks.length - 1;}
+			if(top < 0) { top = 0;}
+			if(bottom >= blocks[0].length) { bottom = blocks[0].length - 1;}
+			for(int x = leftEdge; x < rightEdge; x++) {
+				for(int y = top; y < bottom; y++) {
+					Body body = blocks[x][y];
+					int side;
+					if(!body.getAir() && entities.get(i).collisionCheck(body)) {
+						side = entities.get(i).collisionSide(body);
+						if(side == 1) {
+							gravity = false;
+						}
+						entities.get(i).colidesBlock(side, body);
+					}
+				}
+			}
+			entities.get(i).update(gravity);
+		}
+	}
+	
+	public void swing() {
+		Inventory inv = myPlayer.getInventory();
+  		Item item = inv.getToolBar()[inv.getItemSelected()];
+  		int c =item.getCount();
+  		for(Entity ent : entities){
+  			int sX = (int)myPlayer.getX() + (int)myPlayer.getWidth() - (int)item.width;
+			int sY = (int)myPlayer.getY() + (int)myPlayer.getHeight() - (int)item.height;
+  			if(c%5 == 0) {
+  				double ix = sX - myPlayer.getWidth();
+  				if(myPlayer.isLookingRight()){
+  					ix = sX + myPlayer.getWidth();
+  				}
+  				item.useItem(ent,ix, sY - myPlayer.getHeight()/4, g, myPlayer.isLookingRight());
+  				System.out.println(ent.getHealth());
+  			}
+  		}
+  		if(c < 29) {
+  			item.draw = true;
+  		}else {
+  			item.draw = false;
+  		}
+  	}
 }

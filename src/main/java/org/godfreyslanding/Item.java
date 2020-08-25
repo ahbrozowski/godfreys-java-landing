@@ -1,15 +1,35 @@
 package org.godfreyslanding;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 public class Item {
 	int amount = 1;
 	int code;
 	boolean stackable;
-	
-	public Item(boolean stackable, int code) {
+	boolean weapon;
+	Color color;
+	int damage;
+	double width;
+	double height;
+	Vector knockback;
+	int count = 0;
+	boolean draw = false;
+	public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, Vector knockback, Color color) {
 		this.stackable = stackable;
 		this.code = code;
+		this.weapon = weapon;
+		this.damage = damage;
+		this.height = height;
+		this.width = width;
+		this.knockback = knockback;
+		this.color = color;
+	}
+	public Color getColor() {
+		return color;
+	}
+	public void setColor(Color color) {
+		this.color = color;
 	}
 	public int getCode() {
 		return code;
@@ -45,5 +65,37 @@ public class Item {
 		return ""+ amount;
 	}
 	
+	public void draw(Graphics2D g) {
+		
+	}
+	public boolean colidsEntity(Entity e, double x, double y) {
+		return false;
+		
+	}
+	public void useItem(Entity e, double x, double y, Graphics2D g, boolean lr) {
+	}
 	
+	public void countUp() {
+		count++;
+	}
+	
+	public int getCount() {
+		return count;
+	}
+	public void resetCount() {
+		count = 0;
+	}
+	
+	public double getWidth() {
+		return width;
+	}
+	public void setWidth(double width) {
+		this.width = width;
+	}
+	public double getHeight() {
+		return height;
+	}
+	public void setHeight(double height) {
+		this.height = height;
+	}
 }
