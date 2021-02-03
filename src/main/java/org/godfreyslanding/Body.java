@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 public class Body {
-	int light = 0;
 	double x;
 	double y;
 	double width;
@@ -16,7 +15,13 @@ public class Body {
 	boolean air;
 	int health;
 	int code;
-	public Body(double x, double y, double width, double height, Vector velocity, Color color, Boolean air, int health) {
+	int light;
+	Shadow s;
+	boolean shadow = false;
+	boolean gl;
+	BoundingBox bBox;
+	public Body(double x, double y, double width, double height, Vector velocity, Color color, Boolean air, int health, int light, boolean gl) {
+		
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -26,8 +31,32 @@ public class Body {
 		this.color = color;
 		this.air = air;
 		this.health = health;
+		this.light = light;
+		s = new Shadow(x,y, 8);
+		this.gl = gl;
+		bBox = new BoundingBox(5,(int)(this.x/2),(int)(this.y/2));
 	}
 	
+
+	public boolean isGl() {
+		return gl;
+	}
+
+
+	public void setGl(boolean gl) {
+		this.gl = gl;
+	}
+
+
+	public int getLight() {
+		return light;
+	}
+
+
+	public void setLight(int light) {
+		this.light = light;
+	}
+
 
 	public int getHealth() {
 		return health;
@@ -62,6 +91,13 @@ public class Body {
 			return false;
 		}
 		
+	}
+	
+	public double calcDist(Body b) {
+		double xDist = Math.abs(this.x - b.getX());
+		double yDist = Math.abs(this.y - b.getY());
+		double hDist = Math.sqrt((Math.pow(xDist, 2) + Math.pow(yDist, 2) ));
+		return hDist;
 	}
 	
 	public int collisionSide(Body body) {
@@ -101,45 +137,64 @@ public class Body {
 		
 	}
 
-	public void update(boolean gravity) {
+	public void update(boolean gravity, Time t) {
 		if(gravity) {
 			velocity.gravity();
 		}
 		velocity.movement(this);
 	}
 	
-	public void drawHUB(Graphics2D g, int width,int height) {
-		
-	}
-	
-	public void drawItem(int x, int y, Graphics2D g, int width,int height) {
-		
-	}
 	
 	public void draw(Graphics2D g, int tabW, int tabH) {
-			AffineTransform old = g.getTransform();
-			try {
-				g.translate(10 * x, 10 * y);
-				// g.rotate(angle);
-				drawHUB(g, tabW, tabH);
-
-				int x = (int) Math.round(10 * (-this.width / 2.0));
-				int y = (int) Math.round(10 * (-this.height / 2.0));
-				int w = (int) Math.round(10 * width);
-				int h = (int) Math.round(10 * height);
-				drawItem(x,y, g, tabW, tabH);
-				Color c = g.getColor();
-				g.setColor(color);
-				g.fillRect(x, y, w, h);
-				g.setColor(c);
-			} finally {
-				g.setTransform(old);
-			}
+		shadow = false;
+		AffineTransform old = g.getTransform();
+		try {
+			g.translate(10 * this.x, 10 * this.y);
+		// g.rotate(angle);
+			drawBody(g, tabW, tabH);
+				
+		} finally {
+			g.setTransform(old);
 		}
+	}
+
+
+	public void drawBody(Graphics2D g, int winW, int winH) {
+		int x = (int) Math.round(10 * (-this.width / 2.0));
+		int y = (int) Math.round(10 * (-this.height / 2.0));
+		int w = (int) Math.round(10 * this.width);
+		int h = (int) Math.round(10 * this.height);
+		Color c = g.getColor();
+		g.setColor(color);
+		g.fillRect(x, y, w, h);
+		g.setColor(c);
+	}
 	
+	public void drawShadow(Graphics2D g) {
+			s.draw(g);
+			shadow = true;
+	}
 	public double getX() {
 		return x;
 	}
+
+	public int getOpacity() {
+		return s.getOpacity();
+	}
+	public void setOpacity(int o) {
+		s.setOpacity(o);
+	}
+
+
+	public boolean isShadow() {
+		return shadow;
+	}
+
+
+	public void setShadow(boolean shadow) {
+		this.shadow = shadow;
+	}
+
 
 	public void setX(double f) {
 		this.x = f;
@@ -192,4 +247,9 @@ public class Body {
 		// TODO Auto-generated method stub
 		
 	}
+	public BoundingBox getBBox() {
+		bBox.update((int)(this.x/2),(int)(this.y/2));
+		return bBox;
+	}
+	
 }

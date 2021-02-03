@@ -17,7 +17,7 @@ public class Box2DSample {
 		World world = new World(gravity);
 		
 		
-		BodyDef groundBodyDef = new BodyDef();
+		BodyDef groundBodyDef = new BodyDef(); 
 		groundBodyDef.position.set(0.0f, -10.0f);
 		
 		Body groundBody = world.createBody(groundBodyDef);

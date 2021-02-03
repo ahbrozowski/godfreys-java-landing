@@ -7,7 +7,7 @@ import java.awt.geom.AffineTransform;
 public class Sword extends Item {
 	static Vector knockback = new Vector(.4,-.4); 
 	public Sword() {
-		super(false, 3, true, 10, 3, 3, knockback, Color.LIGHT_GRAY);
+		super(false, 3, true, 10, 3, 3, knockback, Color.LIGHT_GRAY, 0);
 		// TODO Auto-generated constructor stub
 	}
 	

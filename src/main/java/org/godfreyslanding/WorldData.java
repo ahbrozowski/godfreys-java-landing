@@ -6,8 +6,10 @@ import java.util.ArrayList;
 public class WorldData {
 	Body[][] blocks;
 	int spawnY = 0;
- 
+	Time t;
+	ArrayList<Biome> biomes = new ArrayList<Biome>();
 	public WorldData(Body[][] blocks) {
+		t = new Time();
 		this.blocks = blocks;
 		worldGen();
 	}
@@ -18,7 +20,7 @@ public class WorldData {
 
 	public void worldGen() {
 		ArrayList<Double> vals = new ArrayList<Double>();
-		
+		biomes.add(new Overworld(0,0, blocks.length, 100));
 		for(int x = 0; x < blocks.length; x++) {
 			
 			double r = (noise(x * (1.0/300.0),false) * 1.0 +
@@ -42,21 +44,24 @@ public class WorldData {
 				//System.out.println(r2d);
 				Vector v2 = new Vector(0,0);
 				if(y <= (n + 50)) {
-					blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.CYAN, true, 0);
+					blocks[x][y] = new Sky(2*x,2*y);
 					
 					if(Math.abs(r2) > 2){
 						vals.add(Math.abs(r2));
 					}
-				}else {
+				 }else {
 					if(Math.abs(r2) <  .4 || Math.abs(r2) > 2) {
-						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.CYAN, true, 0);
+						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
+						if(biomes.get(0).containsBody(blocks[x][y])) {
+							blocks[x][y] = biomes.get(0).getSkyBlock(2*x,2*y);
+						}
 						//System.out.println(x + " " + y);
 					} else if(Math.abs(stone) < .5) {
 						//System.out.println(x + " " + y);
 						blocks[x][y] = new StoneB(2*x,2*y);
 					} 
 					else {
-						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.RED, false, 10);
+						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.RED, false, 10, 0, false);
 					}
 				}
 			}
@@ -182,5 +187,23 @@ public class WorldData {
 	public int getSpawnY() {
 		return spawnY;
 	}
+
+	public Time getT() {
+		return t;
+	}
+
+	public void setT(Time t) {
+		this.t = t;
+	}
+
+	public ArrayList<Biome> getBiomes() {
+		return biomes;
+	}
+
+	public void setBiomes(ArrayList<Biome> biomes) {
+		this.biomes = biomes;
+	}
+	
+	
 	
 }

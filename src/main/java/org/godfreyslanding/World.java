@@ -20,38 +20,49 @@ public class World {
 	boolean swinging = false;
 	int spawnY;
 	Graphics2D g;
+	Time time;
 	ArrayList<Entity> entities;
+	int spawnCap = 10;
+	ArrayList<Biome> biomes;
+	int slowdown = 0;
+	BoundingRect screen;
+	BoundingRect spawn;
+	
 	public World(WorldData w) {
+		biomes = w.getBiomes();
 		blocks = w.getBlocks();
 		entities = new ArrayList<Entity>();
 		Vector v2 = new Vector(0,0);
 		spawnY = w.getSpawnY();
-		myPlayer = new Player(1000,spawnY,2,2,v2, Color.BLUE, false);
+		myPlayer = new Player(1000,spawnY,2,2,v2, Color.BLUE);
 		Item p = new StoneP();
 		p.setAmount(100);
 		myPlayer.getInventory().addItem(p);
+		Item t = new TorchP();
+		t.setAmount(50);
 		myPlayer.getInventory().addItem(new Sword());
+		myPlayer.getInventory().addItem(t);
 		myPlayer.setSpawn(1000, spawnY);
 		System.out.print(spawnY);
-		entities.add(new Zombie(1020.0, (double)spawnY - 10, myPlayer));
+		//entities.add(new Zombie(1020.0, (double)spawnY - 10, myPlayer));
+		time = w.getT();
 		//System.out.print(blocks[500][spawnY].getAir());
+		screen = new BoundingRect(10,10, (int)myPlayer.getY()/2,(int)myPlayer.getY()/2 );
+		spawn = new BoundingRect(20,20, (int)myPlayer.getY()/2,(int)myPlayer.getY()/2 );
+		
 	}
 
 	public void update(float t) {
+		time.update();
+		slowdown++;
 		//System.out.println(myPlayer.getX() + " " + myPlayer.getY());
 		myPlayer.setColidedR(false);
 		myPlayer.setColidedL(false);
 		boolean gravity = true;
-		int leftEdge = (int)(myPlayer.getX()/2 - 5);
-		int rightEdge = (int)(myPlayer.getX()/2 + 6);
-		int top = (int)(myPlayer.getY()/2 - 5);
-		int bottom = (int)(myPlayer.getY()/2 + 6);
-		if(leftEdge < 0) { leftEdge = 0;}
-		if(rightEdge >= blocks.length) { rightEdge = blocks.length - 1;}
-		if(top < 0) { top = 0;}
-		if(bottom >= blocks[0].length) { bottom = blocks[0].length - 1;}
-		for(int x = leftEdge; x < rightEdge; x++) {
-			for(int y = top; y < bottom; y++) {
+		BoundingBox bBox = myPlayer.getBBox();
+		bBox.correct(blocks);
+		for(int x = bBox.getLeftEdge(); x < bBox.getRightEdge(); x++) {
+			for(int y = bBox.getTop(); y < bBox.getBottom(); y++) {
 				Body body = blocks[x][y];
 				if(!body.getAir() && myPlayer.collisionCheck(body)) {
 					int side = myPlayer.collisionSide(body);
@@ -65,7 +76,7 @@ public class World {
 					if(side == 2 || side == 0) {
 						//System.out.println(side);
 					}
-					body.update(false);
+					body.update(false,time);
 					myPlayer.colidesBlock(side, body);
 				}
 					
@@ -91,6 +102,13 @@ public class World {
 			}
 			if(ent.getHealth() <= 0) {
 				entities.remove(i);
+				i--;
+			}
+			
+			
+			if(ent.calcDist(myPlayer) > 100) {
+				entities.remove(i);
+				i--;
 			}
 		}
 		if(breaking) {
@@ -101,11 +119,15 @@ public class World {
 		}
 		if(swinging) {
 			Inventory inv = myPlayer.getInventory();
-	  		Item item = inv.getToolBar()[inv.getItemSelected()];
-			swing();
-	  		item.countUp();
-	  		if(item.getCount() > 30) {
-	  			item.resetCount();
+	  		Item item = myPlayer.getSelectedItem();
+	  		if(item != null) {
+				swing();
+		  		item.countUp();
+		  		if(item.getCount() > 30) {
+		  			item.resetCount();
+		  			swinging = false;
+		  		}
+	  		} else {
 	  			swinging = false;
 	  		}
 		}
@@ -114,6 +136,9 @@ public class World {
 			phaseGuard();
 		}
 		if(myPlayer.getHealth() <= 0) {
+			if(spawnY < 0) {
+				spawnY = 0;
+			} 
 			if(!blocks[500][spawnY/2].getAir()) {
 				blocks[500][spawnY/2].setAir(true);
 				blocks[500][spawnY/2].setColor(Color.CYAN);
@@ -121,10 +146,22 @@ public class World {
 			}
 		}
 		entityPhysics();
-		myPlayer.update(gravity);
+		myPlayer.update(gravity, time);
+		
+		if(entities.size() < spawnCap ) {
+			int rate = 30 + (10 * entities.size());
+			int r = (int)(Math.random() * rate);
+					
+			if(r == rate/2) {    
+				enemySpawn();
+			}
+		}
 	}
 	
 	public void draw(Graphics2D g, int width, int height) {
+		int globalLightValue = calcGlobeLight();
+		ArrayList<Body> ls = new ArrayList<Body>(); 
+		ls.add(myPlayer);
 		this.g = g;
 		this.width = width;
 		this.height = height;
@@ -133,23 +170,58 @@ public class World {
 		double y = myPlayer.getY();
 		
 		g.translate((width/2)-10*x, (height/2)-10*y);
+		screen.setHeight(height/20 + 2);
+		screen.setWidth(width/20 + 2);
+		screen.update((int)myPlayer.getX()/2,(int)myPlayer.getY()/2);
+		screen.correct(blocks);
 		
-		int leftEdge = (int)(myPlayer.getX()/2)- (width/40)-3;
-		int rightEdge = (int)(myPlayer.getX()/2) + (width/40)+3;
-		int top = (int)(myPlayer.getY()/2 - (height/40)-3);
-		int bottom = (int)(myPlayer.getY()/2 + (height/40)+3);
-		if(leftEdge < 0) { leftEdge = 0;}
-		if(rightEdge >= blocks.length) { rightEdge = blocks.length - 1;}
-		if(top < 0) { top = 0;}
-		if(bottom >= blocks[0].length) { bottom = blocks[0].length - 1;}
-		for(int i = leftEdge; i < rightEdge; i++) {
-			for(int j = top; j < bottom; j++) {
+		for(int i = screen.getLeftEdge(); i < screen.getRightEdge(); i++) {
+			for(int j = screen.getTop(); j < screen.getBottom(); j++) {
+				
 				Body body = blocks[i][j];
 				body.draw(g,width,height);
+				body.setOpacity(8);
+				if(body.getLight() > 0) {
+					ls.add(body);
+				} 
+				if(body.isGl()) {
+					body.setLight(globalLightValue);
+				}
+				
 			}
-		} 
+		}
+		
+
 		for(Body entity: entities) {
 			entity.draw(g,width,height);
+			if (entity.getLight() > 0) {
+				ls.add(entity);
+			}
+		}
+		for(Body body: ls) {
+			for(int i = (int)(body.getX()/2 - body.getLight()); i <= body.getX()/2 + body.getLight(); i++) {
+				if(i < 0) { i = 0;}
+				if(i >= blocks.length) { i = blocks.length - 1;}
+				for(int j = (int)(body.getY()/2 - body.getLight()); j <= body.getY()/2 + body.getLight(); j++) {
+					if(j < 0) { j = 0;}
+					if(j >= blocks[0].length) { j = blocks[0].length - 1;}
+					Body b =  blocks[i][j];
+					int distX = Math.abs((int)b.getX()/2 - (int)body.getX()/2);
+					int distY = Math.abs((int)b.getY()/2 - (int)body.getY()/2);
+					int dist = (distX + distY);
+					int o = 8-body.getLight() + dist;
+					if(b.getOpacity() > o) { 
+						b.setOpacity(o);
+					}
+				}
+			}
+		}
+		
+		for(int i = screen.getLeftEdge(); i < screen.getRightEdge(); i++) { 
+			for(int j = screen.getTop(); j < screen.getBottom(); j++) {
+				Body body = blocks[i][j];
+				body.drawShadow(g);
+			}
 		}
 		//System.out.println(leftEdge + " " + rightEdge + " " + top + " " + bottom);
 		/* x for(Body[] block: blocks){
@@ -177,38 +249,42 @@ public class World {
             myPlayer.startLeft();
         }
         if(e.getKeyCode() == KeyEvent.VK_1){
-        	myPlayer.inventory.setItemSelected(0);
+        	myPlayer.setItemSelected(0);
         }
         if(e.getKeyCode() == KeyEvent.VK_2){
-        	myPlayer.inventory.setItemSelected(1);
+        	myPlayer.setItemSelected(1);
         }
         if(e.getKeyCode() == KeyEvent.VK_3){
-        	myPlayer.inventory.setItemSelected(2);
+        	myPlayer.setItemSelected(2);
         }
         if(e.getKeyCode() == KeyEvent.VK_4){
-        	myPlayer.inventory.setItemSelected(3);
+        	myPlayer.setItemSelected(3);
         }
         if(e.getKeyCode() == KeyEvent.VK_5){
-        	myPlayer.inventory.setItemSelected(4);
+        	myPlayer.setItemSelected(4);
         }
         if(e.getKeyCode() == KeyEvent.VK_6){
-        	myPlayer.inventory.setItemSelected(5);
+        	myPlayer.setItemSelected(5);
         }
         if(e.getKeyCode() == KeyEvent.VK_7){
-        	myPlayer.inventory.setItemSelected(6);
+        	myPlayer.setItemSelected(6);
         }
         if(e.getKeyCode() == KeyEvent.VK_8){
-        	myPlayer.inventory.setItemSelected(7);
+        	myPlayer.setItemSelected(7);
         }
         if(e.getKeyCode() == KeyEvent.VK_9){
-        	myPlayer.inventory.setItemSelected(8);
+        	myPlayer.setItemSelected(8);
         }
         if(e.getKeyCode() == KeyEvent.VK_0){
-        	myPlayer.inventory.setItemSelected(9);
+        	myPlayer.setItemSelected(9);
         }
         if(e.getKeyCode() == KeyEvent.VK_K){
         	myPlayer.damage(100);
         }
+        if(e.getKeyCode() == KeyEvent.VK_T){
+            // System.out.println("Key Pressed" + e.getKeyCode());
+             System.err.println(time.getHour()); 
+         }
 	
 	}
 	
@@ -229,22 +305,20 @@ public class World {
 			placing = true;
 		}
 		if(e.getButton() == 1) {
-			Inventory inv = myPlayer.getInventory();
-			if (!inv.getToolBar()[inv.getItemSelected()].isStackable()) {
+			if (myPlayer.isHoldingWeapon()) {
 				swinging = true;
 			} else {
 				breaking = true;
 			}
 		}
 		Point p = MouseInfo.getPointerInfo().getLocation();
-		if(((p.x + 12)/10 + myPlayer.getX() - width/20) > myPlayer.getX()) {
+		if(((p.x)/10 + myPlayer.getX() - width/20) > myPlayer.getX()) {
 			myPlayer.setLookingRight(true);
 			
 		} else {
 			myPlayer.setLookingRight(false);
 		}
 	}
-
 
 	public void mouseReleased(MouseEvent e) {
 		if(e.getButton() == 1) {
@@ -259,8 +333,8 @@ public class World {
 	
 	public void breakBlock() {
 		Point p = MouseInfo.getPointerInfo().getLocation();
-		int x = (p.x + 12)/10 + (int)myPlayer.getX() - width/20;
-		int y = (p.y - 35)/10 + (int)myPlayer.getY() - height/20;
+		int x = (p.x)/10 + (int)myPlayer.getX() - width/20;
+		int y = (p.y - 20)/10 + (int)myPlayer.getY() - height/20;
 		boolean xfits = (x/2 >= 0) && (x/2 < blocks.length);
 		boolean yfits = (y/2 >= 0) && (y/2 < blocks[0].length);
 		//System.out.println(x + " " + y);
@@ -268,8 +342,13 @@ public class World {
 			Body b = blocks[x/2][y/2];
 			if(!b.getAir()) {
 				if(b.getHealth() == 0) {
-					b.setAir(true);
-					b.setColor(Color.CYAN);
+					Vector v2 = new Vector(0,0);
+					blocks[x/2][y/2] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
+					for(Biome biome: biomes) {
+						if(biome.containsBody(b)) {
+							blocks[x/2][y/2] = biome.getSkyBlock(b.getX(),b.getY()); 
+						}
+					}
 					myPlayer.getInventory().addItem(b.item(1));
 				} else {
 					b.setHealth(b.getHealth() - 1);
@@ -286,17 +365,18 @@ public class World {
 		boolean yfits = (y/2 >= 0) && (y/2 < blocks[0].length);
 		Inventory inv = myPlayer.getInventory();
 		boolean clickedOnPlayer = ((x >= myPlayer.getX() - 1 && x <= myPlayer.getX() + 1) && (y >= myPlayer.getY() - 1 && y <= myPlayer.getY() + 1)); 
-		if(inv.toolBar[inv.getItemSelected()] != null &&  inv.toolBar[inv.getItemSelected()].isStackable()) {
+		Toolbar tb = inv.getToolbar();
+		if(myPlayer.isHoldingStackable()) {
 			if(xfits && yfits && !clickedOnPlayer) {
 				Body b = blocks[x/2][y/2];
 				if(b.getAir()) {
-					blocks[x/2][y/2] = inv.toolBar[inv.getItemSelected()].place(2*(x/2), 2*(y/2));
-					inv.removeItem(1);
+					blocks[x/2][y/2] = myPlayer.getSelectedItem().place(2*(x/2), 2*(y/2));
+					myPlayer.removeSelectedItem();
 				}
 			}
 		}
 	}
-	
+
 	public void phaseGuard() {
 		int x = (int)(myPlayer.getX()/2);
 		int y = (int)((myPlayer.getY() + myPlayer.getVelocity().getY())/2);
@@ -314,35 +394,29 @@ public class World {
 	public void entityPhysics() {
 		for(int i = 0; i < entities.size(); i++) {
 			boolean gravity = true;
-			int leftEdge = (int)(entities.get(i).getX()/2 - 5);
-			int rightEdge = (int)(entities.get(i).getX()/2 + 6);
-			int top = (int)(entities.get(i).getY()/2 - 5);
-			int bottom = (int)(entities.get(i).getY()/2 + 6);
-			if(leftEdge < 0) { leftEdge = 0;}
-			if(rightEdge >= blocks.length) { rightEdge = blocks.length - 1;}
-			if(top < 0) { top = 0;}
-			if(bottom >= blocks[0].length) { bottom = blocks[0].length - 1;}
-			for(int x = leftEdge; x < rightEdge; x++) {
-				for(int y = top; y < bottom; y++) {
+			Entity entity = entities.get(i);
+			BoundingBox bBox = entity.getBBox();
+			bBox.correct(blocks);
+			for(int x = bBox.getLeftEdge(); x < bBox.getRightEdge(); x++) {
+				for(int y = bBox.getTop(); y < bBox.getBottom(); y++) {
 					Body body = blocks[x][y];
-					int side;
-					if(!body.getAir() && entities.get(i).collisionCheck(body)) {
-						side = entities.get(i).collisionSide(body);
+					if(!body.getAir() && entity.collisionCheck(body)) {
+						int side = entity.collisionSide(body);
 						if(side == 1) {
 							gravity = false;
 						}
-						entities.get(i).colidesBlock(side, body);
+						entity.colidesBlock(side, body);
 					}
 				}
 			}
-			entities.get(i).update(gravity);
+			entity.update(gravity,time);
+			
 		}
 	}
 	
 	public void swing() {
-		Inventory inv = myPlayer.getInventory();
-  		Item item = inv.getToolBar()[inv.getItemSelected()];
-  		int c =item.getCount();
+  		Item item = myPlayer.getSelectedItem();
+  		int c = item.getCount();
   		for(Entity ent : entities){
   			int sX = (int)myPlayer.getX() + (int)myPlayer.getWidth() - (int)item.width;
 			int sY = (int)myPlayer.getY() + (int)myPlayer.getHeight() - (int)item.height;
@@ -352,7 +426,7 @@ public class World {
   					ix = sX + myPlayer.getWidth();
   				}
   				item.useItem(ent,ix, sY - myPlayer.getHeight()/4, g, myPlayer.isLookingRight());
-  				System.out.println(ent.getHealth());
+  				//System.out.println(ent.getHealth());
   			}
   		}
   		if(c < 29) {
@@ -361,4 +435,102 @@ public class World {
   			item.draw = false;
   		}
   	}
+	
+	public int calcGlobeLight() {
+		int timeDay = time.getTimeDay();
+		int dayLength = time.getDayLength();
+		double c = dayLength/24.0;
+		double h = timeDay/c;
+		int lowest = 8;
+		for(int i = 1; i <= 8; i++) {
+			if(h < i/2.0 || h > (14 - i/2.0)) {
+				if(i < lowest) {
+					lowest = i;
+				}
+			}
+		}
+		return lowest;
+		
+	}
+	
+	public void enemySpawn() {
+		Biome b = biomes.get(0);
+		for(int i = 0; i < biomes.size(); i++) {
+			if(biomes.get(i).containsBody(myPlayer)) {
+				if(b.getPriority() <= biomes.get(i).getPriority()) {
+					b = biomes.get(i);
+				}
+			}
+		}
+		int r = (int)(Math.random() * 20) - 10;
+		double x = myPlayer.getX() + r;
+		double y = Math.round(myPlayer.getY());
+		SpawnPackage pack = b.getPackage(myPlayer, time, x, y);
+		if(pack.canSpawn()) {
+			findSpawn(pack.getMob());
+			
+		}
+	}
+	
+	public void findSpawn(Entity e) {
+		boolean found = false;
+		int rx = 0;
+		int ry = 0;
+		spawn.setWidth(screen.getWidth() + 20);
+		spawn.setHeight(screen.getHeight() + 20);
+		int numLoops = 0;
+		while(!found) {
+			rx = (int)(Math.random() * spawn.getWidth()) - spawn.getWidth()/2;
+			ry =(int)(Math.random() * spawn.getHeight()) - spawn.getHeight()/2;
+			boolean fitsX = (rx < -screen.getWidth()/2 || rx > screen.getWidth()/2);
+			boolean fitsY = (ry < -screen.getHeight()/2 || ry > screen.getHeight()/2); 
+			
+			//System.out.println(numLoops);
+			numLoops++;
+			if(fitsX && fitsY) {
+				found = true;
+			}
+
+		}
+		int x =(int)(myPlayer.getX()/2) + rx;
+		int y = (int)(myPlayer.getY()/2) + ry;
+		if(y < 0) {y = 0;}
+		if(x < 0) { x = 0;}
+		if( x >= blocks.length) { x = blocks.length - 1;}
+		if(y >= blocks[0].length) { y = blocks[0].length - 1;}
+		boolean empty = blocks[x][y].getAir();
+		while(!empty) {
+			int r = (int)(Math.random() * 2); 
+			if(r == 0) {
+				if(rx < 0) {
+					rx--;
+				}else {
+					rx++;
+				}	
+			} else {
+				if(ry < 0) {
+					ry--;
+				}else {
+					ry++;
+				}	
+			}
+			x =(int)(myPlayer.getX()/2) + rx;
+			y = (int)(myPlayer.getY()/2) + ry;
+			if(y < 0) {break;}
+			if(x < 0) { break;}
+			if( x >= blocks.length) { break;}
+			if(y >= blocks[0].length) { break;}
+			empty = blocks[x][y].getAir();
+		}
+		if(empty) {
+			e.setX(myPlayer.getX() + rx);
+			e.setY(myPlayer.getY() + ry);
+			entities.add(e); 
+		}
+
+		
+
+		
+	}
+	
 }

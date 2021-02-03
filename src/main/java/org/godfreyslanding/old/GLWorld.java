@@ -19,7 +19,7 @@ import org.jbox2d.dynamics.World;
 public class GLWorld  {
 	WorldData w;
 	Image image;
-	final Vec2 gravity;
+	final Vec2 gravity; 
 	final World world;
 	Player myPlayer;
 	Block[][] blocks;

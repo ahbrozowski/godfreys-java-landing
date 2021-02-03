@@ -6,10 +6,12 @@ public class Entity extends Body {
 	boolean stunned = false;
 	int damage;
 	Vector knockback;
-	public Entity(double x, double y, double width, double height, Vector velocity, Color color,int health, int damage, Vector knockback) {
-		super(x, y, width, height, velocity, color,false, health);
+	Player p;
+	public Entity(double x, double y, double width, double height, Vector velocity, Color color,int health, int damage, Vector knockback, int light, Player p) {
+		super(x, y, width, height, velocity, color,false, health, light,false);
 		this.knockback = knockback;
 		this.damage = damage;
+		this.p = p;
 		// TODO Auto-generated constructor stub
 	}
 	public int getDamage() {
@@ -29,10 +31,16 @@ public class Entity extends Body {
 		return stunned;
 	}
 
-
 	public void setStunned(boolean stunned) {
 		this.stunned = stunned;
 	}
 	
+	public Player getP() {
+		return p;
+	}
+
+	public void setP(Player p) {
+		this.p = p;
+	}
 
 }

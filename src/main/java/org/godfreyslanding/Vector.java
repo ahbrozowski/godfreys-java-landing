@@ -60,7 +60,10 @@ public class Vector {
 	public void setY(double d) {
 		this.y = d;
 	};
-	
+	@Override
+	public String toString() {
+		return "Vector [x=" + x + ", y=" + y + "]";
+	}
 	
 	
 }

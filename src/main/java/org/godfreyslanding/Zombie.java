@@ -4,19 +4,18 @@ import java.awt.Color;
 
 public class Zombie extends Entity {
 	static Color color = new Color(160, 192, 144);
-	Player p;
-	static Vector velocity = new Vector(0,0);
 	boolean canJump = true;
 	boolean stop = false;
 	int stunCount = 0;
 	boolean cantBeUnstunned = false;
 	public Zombie(double x, double y, Player p) {
-		super(x, y, 2, 2, velocity, color, 50, 10, new Vector(.5,-.6));
-		this.p = p;
+		super(x, y, 2, 2, new Vector(0,0), color, 50, 10, new Vector(.5,-.6), 3, p);
 		// TODO Auto-generated constructor stub
 	}
 	
 	
+
+
 	public void lookForPlayer() {
 		double pX = p.getX();
 		double pY = p.getY();
@@ -73,8 +72,8 @@ public class Zombie extends Entity {
 	}
 	
 	@Override
-	public void update(boolean gravity) {
-		super.update(gravity);
+	public void update(boolean gravity,Time t) {
+		super.update(gravity,t);
 		this.lookForPlayer();
 		stop = false;
 		if(stunned) {
@@ -87,6 +86,15 @@ public class Zombie extends Entity {
 		} else {
 			cantBeUnstunned= false;
 		}
+	}
+
+
+
+
+	@Override
+	public String toString() {
+		return "Zombie [canJump=" + canJump + ", stop=" + stop + ", stunned=" + stunned + ", damage=" + damage
+				+ ", x=" + x + ", y=" + y+ ", velocity=" + velocity + "]";
 	}
 
 

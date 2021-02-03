@@ -18,15 +18,18 @@ public class Player extends Body {
 	int spawnX = 1000;
 	int deathClock = 0;
 	boolean drawDied = false;
+	Toolbar toolbar;
 	Inventory inventory;
 	double maxHealth;
 	double lastX = 0.0;
 	boolean lookingRight = true;
+	Crafting craft = new Crafting();
 
 
-	public Player(double x, double y, double width, double height, Vector velocity, Color color, boolean air) {
-		super(x, y, width, height, velocity, color, false, 100);
-		inventory = new Inventory(new Item[10], new Item[20]);
+	public Player(double x, double y, double width, double height, Vector velocity, Color color) {
+		super(x, y, width, height, velocity, color, false, 100, 9, false);
+		toolbar = new Toolbar();
+		inventory = new Inventory(toolbar, new Item[20]);
 		maxHealth = 100.0;
 	}
 
@@ -158,14 +161,10 @@ public class Player extends Body {
 		health = health - n;
 	}
 	
-	public void drawHUB(Graphics2D g, int width, int height) {
+	public void drawHUD(Graphics2D g, int width, int height) {
 		//System.out.println(width + " " + height);
-		Item[] toolBar = inventory.getToolBar();
-		for(int i = 0; i < toolBar.length; i++) {
-			if(toolBar[i] != null) {
-				g.drawString(toolBar[i].toString(), 30*i + 40-width/2, 40 - height/2 ) ;
-			}
-		}
+		Toolbar tb = this.toolbar;
+		tb.draw(g, width, height);
 		g.setColor(new Color(255, 215, 0));
 		g.setStroke(new java.awt.BasicStroke(2));
 		g.drawRect(width/2 - 111, 39 - height/2, 101, 21);
@@ -180,14 +179,15 @@ public class Player extends Body {
 			g.drawString("You Died", 0, 0);
 		}
 	}
-	
-	@Override
+
+
 	public void drawItem(int x, int y, Graphics2D g, int width, int height) {
-		Item item = inventory.getToolBar()[inventory.getItemSelected()];
+		Item item = getToolbar().getSelectedItem();
+		
 		if(item != null && item.draw) {
 			g.setColor(item.getColor());
-			int sX = x + (int)this.width*5 - (int)item.height*5;
-			int sY = y + (int)this.height*5 - (int)item.height*5;
+			int sX = x + (int)this.width*5 - (int)item.getWidth()*5;
+			int sY = y + (int)this.height*5 - (int)item.getHeight()*5;
 			
 			int iX = sX - (int)this.width*5;
 			if(lookingRight) {
@@ -196,18 +196,37 @@ public class Player extends Body {
 			
 			g.fillRect(iX, sY - (int)this.height *2, (int)item.getWidth() * 10, (int)item.getHeight() * 10);
 			g.setColor(item.getColor());
-			//System.out.print("airbending slice!");
 		}
+	}
+
+
+	public Toolbar getToolbar() {
+		return this.toolbar;
 	} 
 	
+	
+	@Override
+	public void drawBody(Graphics2D g, int winW, int winH) {
+		drawHUD(g, winW, winH);
+		int x = (int) Math.round(10 * (-this.width / 2.0));
+		int y = (int) Math.round(10 * (-this.height / 2.0));
+		int w = (int) Math.round(10 * this.width);
+		int h = (int) Math.round(10 * this.height);
+		drawItem(x,y, g, winW, winH);
+		Color c = g.getColor();
+		g.setColor(color);
+		g.fillRect(x, y, w, h);
+		g.setColor(c);
+	}
+
+
 	@Override
 	public void draw(Graphics2D g, int width, int height) {
-		// TODO Auto-generated method stub
 		super.draw(g,width,height);
 	}
 
 	@Override
-	public void update(boolean gravity) {
+	public void update(boolean gravity, Time t) {
 		if(isInvinc && invinc > 0 ) {
 			if(invinc < 20 && stunned) {
 				stunned = false;
@@ -265,5 +284,29 @@ public class Player extends Body {
 
 	public void setLookingRight(boolean lookingRight) {
 		this.lookingRight = lookingRight;
+	}
+
+
+	public void setItemSelected(int itemSelected) {
+		this.toolbar.setItemSelected(itemSelected);
+		
+	}
+	public boolean isHoldingWeapon() {
+		return this.toolbar.isHoldingWeapon();
+	}
+	
+	public boolean isHoldingStackable() {
+		return this.toolbar.isHoldingStackable();
+	}
+
+
+	public Item getSelectedItem() {
+		return this.toolbar.getSelectedItem();
+	}
+
+
+	public void removeSelectedItem() {
+		this.toolbar.removeSelectedItem();
+		
 	}
 }
