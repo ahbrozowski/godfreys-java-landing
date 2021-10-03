@@ -5,7 +5,7 @@ import java.awt.Color;
 public class TorchP extends Item {
 
 	public TorchP() {
-		super(true, 4, false, 0, 1, 1, new Vector(0,0), Color.WHITE, 0);
+		super(true, 4, false, 0, 1, 1, new Vector(0,0), Color.WHITE, 0, "torch", false);
 		
 		// TODO Auto-generated constructor stub
 	}

@@ -7,8 +7,11 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+
+import javax.swing.JFrame;
 
 public class World {
 	Body[][] blocks;
@@ -27,16 +30,21 @@ public class World {
 	int slowdown = 0;
 	BoundingRect screen;
 	BoundingRect spawn;
+	//shows crafting menu
+	boolean showCM = false;
+	boolean showCursor = false;
+	JFrame frame;
 	
-	public World(WorldData w) {
+	public World(WorldData w, JFrame frame) {
+		this.frame = frame;
 		biomes = w.getBiomes();
 		blocks = w.getBlocks();
 		entities = new ArrayList<Entity>();
 		Vector v2 = new Vector(0,0);
 		spawnY = w.getSpawnY();
-		myPlayer = new Player(1000,spawnY,2,2,v2, Color.BLUE);
+		myPlayer = new Player(1000,spawnY,2,4,v2, Color.BLUE, this.frame);
 		Item p = new StoneP();
-		p.setAmount(100);
+		p.setAmount(10000);
 		myPlayer.getInventory().addItem(p);
 		Item t = new TorchP();
 		t.setAmount(50);
@@ -49,14 +57,13 @@ public class World {
 		//System.out.print(blocks[500][spawnY].getAir());
 		screen = new BoundingRect(10,10, (int)myPlayer.getY()/2,(int)myPlayer.getY()/2 );
 		spawn = new BoundingRect(20,20, (int)myPlayer.getY()/2,(int)myPlayer.getY()/2 );
-		
 	}
 
 	public void update(float t) {
 		time.update();
 		slowdown++;
 		//System.out.println(myPlayer.getX() + " " + myPlayer.getY());
-		myPlayer.setColidedR(false);
+		myPlayer.setColidedR(false);		
 		myPlayer.setColidedL(false);
 		boolean gravity = true;
 		BoundingBox bBox = myPlayer.getBBox();
@@ -159,6 +166,7 @@ public class World {
 	}
 	
 	public void draw(Graphics2D g, int width, int height) {
+		
 		int globalLightValue = calcGlobeLight();
 		ArrayList<Body> ls = new ArrayList<Body>(); 
 		ls.add(myPlayer);
@@ -168,19 +176,22 @@ public class World {
 		AffineTransform old = g.getTransform();
 		double x = myPlayer.getX();
 		double y = myPlayer.getY();
-		
+		g.setColor(Color.BLACK);
+		g.fillRect(0,0,this.width,this.height);
 		g.translate((width/2)-10*x, (height/2)-10*y);
 		screen.setHeight(height/20 + 2);
 		screen.setWidth(width/20 + 2);
 		screen.update((int)myPlayer.getX()/2,(int)myPlayer.getY()/2);
-		screen.correct(blocks);
-		
+		Point p = getMouseP();
+		int px = p.x;
+		int py = p.y;
+		boolean xfits = (px >= 0) && (px < blocks.length);
+		boolean yfits = (py >= 0) && (py < blocks[0].length);
 		for(int i = screen.getLeftEdge(); i < screen.getRightEdge(); i++) {
 			for(int j = screen.getTop(); j < screen.getBottom(); j++) {
 				
 				Body body = blocks[i][j];
-				body.draw(g,width,height);
-				body.setOpacity(8);
+				body.setDarkLevels(8);
 				if(body.getLight() > 0) {
 					ls.add(body);
 				} 
@@ -192,12 +203,7 @@ public class World {
 		}
 		
 
-		for(Body entity: entities) {
-			entity.draw(g,width,height);
-			if (entity.getLight() > 0) {
-				ls.add(entity);
-			}
-		}
+		
 		for(Body body: ls) {
 			for(int i = (int)(body.getX()/2 - body.getLight()); i <= body.getX()/2 + body.getLight(); i++) {
 				if(i < 0) { i = 0;}
@@ -210,8 +216,8 @@ public class World {
 					int distY = Math.abs((int)b.getY()/2 - (int)body.getY()/2);
 					int dist = (distX + distY);
 					int o = 8-body.getLight() + dist;
-					if(b.getOpacity() > o) { 
-						b.setOpacity(o);
+					if(b.getDarklevels() > o) { 
+						b.setDarkLevels(o);
 					}
 				}
 			}
@@ -220,8 +226,21 @@ public class World {
 		for(int i = screen.getLeftEdge(); i < screen.getRightEdge(); i++) { 
 			for(int j = screen.getTop(); j < screen.getBottom(); j++) {
 				Body body = blocks[i][j];
-				body.drawShadow(g);
+				if(body.getDarklevels() < 8) {
+					body.draw(g,width,height);
+				}
+				//body.drawShadow(g);
 			}
+		}
+		for(Body entity: entities) {
+			entity.draw(g,width,height);
+			if (entity.getLight() > 0) {
+				ls.add(entity);
+			}
+		}
+		
+		if(yfits && xfits) {
+			blocks[px][py].drawHighlight(g);
 		}
 		//System.out.println(leftEdge + " " + rightEdge + " " + top + " " + bottom);
 		/* x for(Body[] block: blocks){
@@ -229,8 +248,16 @@ public class World {
 				body.draw(g);
 			}
 		} */ 
-		myPlayer.draw(g,width,height);
+		myPlayer.draw(g,width,height); 
 		g.setTransform(old);
+		
+		
+		if(showCM) {
+			myPlayer.getCraft().draw(g, this.width, this.height);
+			showCursor = true;
+		}else {
+			showCursor = false;
+		}
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -285,6 +312,9 @@ public class World {
             // System.out.println("Key Pressed" + e.getKeyCode());
              System.err.println(time.getHour()); 
          }
+        if(e.getKeyCode() == KeyEvent.VK_I){
+        	showCM = !showCM;
+        }
 	
 	}
 	
@@ -332,21 +362,21 @@ public class World {
 	
 	
 	public void breakBlock() {
-		Point p = MouseInfo.getPointerInfo().getLocation();
-		int x = (p.x)/10 + (int)myPlayer.getX() - width/20;
-		int y = (p.y - 20)/10 + (int)myPlayer.getY() - height/20;
-		boolean xfits = (x/2 >= 0) && (x/2 < blocks.length);
-		boolean yfits = (y/2 >= 0) && (y/2 < blocks[0].length);
+		Point p = getMouseP();
+		int px = p.x;
+		int py = p.y;
+		boolean xfits = (px >= 0) && (px < blocks.length);
+		boolean yfits = (py >= 0) && (py < blocks[0].length);
 		//System.out.println(x + " " + y);
 		if(xfits && yfits) {
-			Body b = blocks[x/2][y/2];
+			Body b = blocks[px][py];
 			if(!b.getAir()) {
 				if(b.getHealth() == 0) {
 					Vector v2 = new Vector(0,0);
-					blocks[x/2][y/2] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
+					blocks[px][py] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
 					for(Biome biome: biomes) {
 						if(biome.containsBody(b)) {
-							blocks[x/2][y/2] = biome.getSkyBlock(b.getX(),b.getY()); 
+							blocks[px][py] = biome.getSkyBlock(b.getX(),b.getY()); 
 						}
 					}
 					myPlayer.getInventory().addItem(b.item(1));
@@ -358,19 +388,22 @@ public class World {
 	}
 	
 	public void placeBlock() {
-		Point p = MouseInfo.getPointerInfo().getLocation();
-		int x = (p.x)/10 + (int)(myPlayer.getX() + 1) - width/20;
-		int y = (p.y-20)/10 + (int)(myPlayer.getY() - 1) - height/20;
-		boolean xfits = (x/2 >= 0) && (x/2 < blocks.length);
-		boolean yfits = (y/2 >= 0) && (y/2 < blocks[0].length);
+		Point p = getMouseP();
+		int px = p.x;
+		int py = p.y;
+		boolean xfits = (px >= 0) && (px < blocks.length);
+		boolean yfits = (py >= 0) && (py < blocks[0].length);
 		Inventory inv = myPlayer.getInventory();
-		boolean clickedOnPlayer = ((x >= myPlayer.getX() - 1 && x <= myPlayer.getX() + 1) && (y >= myPlayer.getY() - 1 && y <= myPlayer.getY() + 1)); 
+		boolean clickedOnPlayer= false;
+		if(myPlayer.collisionCheck(blocks[px][py])) {
+			 clickedOnPlayer= true;
+		}
 		Toolbar tb = inv.getToolbar();
 		if(myPlayer.isHoldingStackable()) {
 			if(xfits && yfits && !clickedOnPlayer) {
-				Body b = blocks[x/2][y/2];
+				Body b = blocks[px][py];
 				if(b.getAir()) {
-					blocks[x/2][y/2] = myPlayer.getSelectedItem().place(2*(x/2), 2*(y/2));
+					blocks[px][py] = myPlayer.getSelectedItem().place(2*(px), 2*(py));
 					myPlayer.removeSelectedItem();
 				}
 			}
@@ -532,5 +565,42 @@ public class World {
 
 		
 	}
+
+	public boolean showCursor() {
+		return showCursor;
+		
+	}
+	
+	public void setFrame(JFrame frame) {
+		this.frame = frame;
+	}
+	
+	public JFrame getFrame() {
+		return frame;
+	}
+
+	public void mouseClicked() {
+		if(showCM) {
+			myPlayer.getCraft().clicked();
+		}
+		
+	}
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if(showCM) {
+			myPlayer.getCraft().scroll(e);
+		}
+	}
+	
+	public Point getMouseP() {
+		Point p = MouseInfo.getPointerInfo().getLocation();
+		Point fP = frame.getLocation();
+		int top = frame.getInsets().top;
+		int px = ((p.x)/10 + (int)(myPlayer.getX()) - width/20 )/2 -(int)fP.x/20;
+		int py = ((p.y - top)/10 + (int)(myPlayer.getY()) - height/20)/2 - (int)fP.y/20;
+		Point mP = new Point(px,py);
+		return mP;
+	}
+	
 	
 }

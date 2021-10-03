@@ -1,13 +1,23 @@
 package org.godfreyslanding;
 
+import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -23,15 +33,17 @@ public class GodfreysLanding extends JPanel{
 	static WorldData w;
 	double avgDrawTime = 0;
 	double drawCount = 0;
-	
+	JFrame frame;
+	Canvas canvas;
 	public GodfreysLanding() {
 		w = new WorldData(new Body[1000][1000]);
-		world = new World(w);
-		JFrame frame = new JFrame();
+		frame = new JFrame();
+		world = new World(w,frame);
+		this.setSize(WIDTH, HEIGHT);
 		frame.setTitle("Godfrey's Landing");
 		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);
+		frame.add(this);;
 		frame.setVisible(true);
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		frame.addKeyListener(new KeyListener() {
@@ -54,14 +66,25 @@ public class GodfreysLanding extends JPanel{
 		int width = this.getWidth();
 		int height = this.getHeight();
 		
+		frame.addMouseWheelListener( new MouseWheelListener() {
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				GodfreysLanding.this.world.mouseWheelMoved(e);
+				
+			}
+			 
+			 
+		});
+		
 		frame.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
+				GodfreysLanding.this.world.mouseClicked();
 				
 			}
-
+		
 			@Override
 			public void mousePressed(MouseEvent e) {
 				GodfreysLanding.this.world.mousePressed(e);				
@@ -86,7 +109,7 @@ public class GodfreysLanding extends JPanel{
 			}
 			
 		});
-		
+		world.setFrame(frame);
 		Timer timer = new Timer(MILLIS_PER_FRAME, e -> {
 			GodfreysLanding.this.tick();
 		});
@@ -107,7 +130,6 @@ public class GodfreysLanding extends JPanel{
 		long start = System.nanoTime();
 
 		super.paintComponent(graphics);
-		
 		Graphics2D g = (Graphics2D)graphics;
 		world.draw(g,this.getWidth(),this.getHeight());
 		
@@ -123,6 +145,15 @@ public class GodfreysLanding extends JPanel{
 		if (print) {
 			System.err.println(String.format("Millis Per Frame:  %s Avg Draw Time: %s", MILLIS_PER_FRAME, avgDrawTime / 1000000L));
 		}
+		
+		if(world.showCursor() == false) {
+			frame.setCursor( frame.getToolkit().createCustomCursor(
+	                   new BufferedImage( 1, 1, BufferedImage.TYPE_INT_ARGB ),
+	                   new Point(),
+	                   null ) );
+		} else{
+			frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+		} 
 		
 	}
 	

@@ -15,7 +15,9 @@ public class Item {
 	Vector knockback;
 	int count = 0;
 	boolean draw = false;
-	public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, Vector knockback, Color color, int light) {
+	String name;
+	Boolean material;
+	public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, Vector knockback, Color color, int light, String name, boolean material) {
 		this.stackable = stackable;
 		this.code = code;
 		this.weapon = weapon;
@@ -24,6 +26,8 @@ public class Item {
 		this.width = width;
 		this.knockback = knockback;
 		this.color = color;
+		this.name = name;
+		this.material = material;
 	}
 	public Color getColor() {
 		return color;
@@ -97,5 +101,8 @@ public class Item {
 	}
 	public void setHeight(double height) {
 		this.height = height;
+	}
+	public String getName() {
+		return name;
 	}
 }

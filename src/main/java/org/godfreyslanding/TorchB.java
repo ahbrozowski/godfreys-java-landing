@@ -4,7 +4,7 @@ import java.awt.Color;
 
 public class TorchB extends Body {
 	public TorchB(double x, double y) {
-		super(x, y, 2, 2, new Vector(0,0), Color.WHITE, false, 1, 10, false);
+		super(x, y, 2, 2, new Vector(0,0), Color.WHITE, false, 1, 20, false);
 		// TODO Auto-generated constructor stub
 	}
 	public Item item(int n) {

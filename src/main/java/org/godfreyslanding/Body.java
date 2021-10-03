@@ -18,6 +18,7 @@ public class Body {
 	int light;
 	Shadow s;
 	boolean shadow = false;
+	int darkLevels = 0;
 	boolean gl;
 	BoundingBox bBox;
 	public Body(double x, double y, double width, double height, Vector velocity, Color color, Boolean air, int health, int light, boolean gl) {
@@ -165,7 +166,7 @@ public class Body {
 		int w = (int) Math.round(10 * this.width);
 		int h = (int) Math.round(10 * this.height);
 		Color c = g.getColor();
-		g.setColor(color);
+		g.setColor(this.darken());
 		g.fillRect(x, y, w, h);
 		g.setColor(c);
 	}
@@ -174,15 +175,38 @@ public class Body {
 			s.draw(g);
 			shadow = true;
 	}
+	public void drawHighlight(Graphics2D g) {
+		AffineTransform old = g.getTransform();
+		try {
+			g.translate(10 * this.x , 10 * this.y);
+			g.setColor(new Color(228,195,62, 150));
+			g.fillRect(-10, -10, 20, 20);
+		} finally {
+			g.setTransform(old);
+		}
+}
+	
+	public Color darken() {
+		if(darkLevels <= 0) {
+			return color;
+		}
+		int rGradiant = color.getRed()/8;
+		int gGradiant = color.getGreen()/8;
+		int bGradiant = color.getBlue()/8;
+		return new Color(color.getRed() - darkLevels*rGradiant, color.getGreen()- darkLevels*gGradiant, color.getBlue()- darkLevels*bGradiant);
+	} 
+	
 	public double getX() {
 		return x;
 	}
 
-	public int getOpacity() {
-		return s.getOpacity();
+	public int getDarklevels() {
+		//return s.getOpacity();
+		return darkLevels;
 	}
-	public void setOpacity(int o) {
+	public void setDarkLevels(int o) {
 		s.setOpacity(o);
+		darkLevels = o;
 	}
 
 
@@ -251,5 +275,6 @@ public class Body {
 		bBox.update((int)(this.x/2),(int)(this.y/2));
 		return bBox;
 	}
-	
+
+
 }

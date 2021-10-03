@@ -42,7 +42,7 @@ public class Shadow {
 		try {
 			g.translate(10 * x -20, 10 * y-20);
 			g.setColor(new Color(0,0,0, opacity *  32 - (int)(opacity * 1/8.0)));
-			g.fillRect(10, 10, 20, 20);
+			g.fillRect(10,10, 20, 20);
 		} finally {
 			g.setTransform(old);
 		}

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
+import javax.swing.JFrame;
+
 public class Player extends Body {
 	boolean canJump = true;
 	boolean movingR = false;
@@ -15,7 +17,7 @@ public class Player extends Body {
 	double deceleration = .03;
 	int invinc = 30;
 	int spawnY = 0;
-	int spawnX = 1000;
+	int spawnX = 0;
 	int deathClock = 0;
 	boolean drawDied = false;
 	Toolbar toolbar;
@@ -23,14 +25,15 @@ public class Player extends Body {
 	double maxHealth;
 	double lastX = 0.0;
 	boolean lookingRight = true;
-	Crafting craft = new Crafting();
+	Crafting craft;
 
 
-	public Player(double x, double y, double width, double height, Vector velocity, Color color) {
+	public Player(double x, double y, double width, double height, Vector velocity, Color color, JFrame frame) {
 		super(x, y, width, height, velocity, color, false, 100, 9, false);
 		toolbar = new Toolbar();
 		inventory = new Inventory(toolbar, new Item[20]);
 		maxHealth = 100.0;
+		craft = new Crafting(frame, inventory);
 	}
 
 	
@@ -308,5 +311,8 @@ public class Player extends Body {
 	public void removeSelectedItem() {
 		this.toolbar.removeSelectedItem();
 		
+	}
+	public Crafting getCraft() {
+		return this.craft;
 	}
 }
