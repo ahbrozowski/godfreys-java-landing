@@ -11,23 +11,15 @@ public class Recipe {
 		
 		
 		public boolean hasIngredients(Inventory inventory) {
-			Item[] tb = inventory.getToolbar().getItems();
-			Item[] inv = inventory.getInventory();
+			boolean has = true;
 			for(int[] ing: ingredients) {
-				for(Item item: tb) {
-					if(item.getCode() == ing[0] && item.getCount() >= ing[1]) {
-						return true;
-					}
+				if(inventory.has(ing[0]) < ing[1]) {
+					return false;
 				} 
-				for(Item item: inv) {
-					if(item.getCode() == ing[0] && item.getCount() >= ing[1]) {
-						return true;
-					}
-				}
 				
 			}
 			
-			return false;
+			return true;
 		}
 
 
@@ -50,6 +42,8 @@ public class Recipe {
 			this.ingredients = ingredients;
 		}
 
-		
+		public String getName() {
+			return item.getName();
+		}
 		
 }

@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 public class Crafting {
 	
 	ArrayList<Recipe> recipes = new ArrayList<Recipe>();
-	ArrayList<Item> canCraft = new ArrayList<Item>();
+	ArrayList<Recipe> canCraft = new ArrayList<Recipe>();
 	Inventory inv;
 	int width = 600;
 	int height = 400;
@@ -36,14 +36,8 @@ public class Crafting {
 		super();
 		this.inv = inv;
 		this.frame = frame;
-		int[][] i = {{2,5}};
+		int[][] i = {{2,1}};
 		recipes.add(new Recipe(i, new TorchP()));
-		canCraft.add(new StoneP());
-		canCraft.add(new Sword());
-		canCraft.add(new TorchP());
-		canCraft.add(new StoneP());
-		canCraft.add(new Sword());
-		canCraft.add(new TorchP());
 		craft = new MyButton(100, 100, 200, 100, Color.WHITE, frame);
 		up = new MyButton(120, 60, 100, 40, Color.BLUE,frame);
 		down = new MyButton(120, 60, 100, 40, Color.RED,frame);
@@ -53,7 +47,11 @@ public class Crafting {
 	}
 	
 	public void getOptions() {
-		
+		for(Recipe r: recipes) {
+			if(r.hasIngredients(inv)) {
+				canCraft.add(r);
+			}
+		}
 	}
 	
 	public void draw(Graphics2D g, int width, int height) {
@@ -115,12 +113,16 @@ public class Crafting {
 			System.out.print("clicked");
 		}
 		if(up.clicked()) {
-			scrollPosition++;
-		}
-		if(down.clicked()) {
 			scrollPosition--;
 		}
-		
+		if(down.clicked()) {
+			scrollPosition++;
+		} 
+		if(craft.clicked()) {
+			this.craft();
+		}
+		if(scrollPosition < 0) {scrollPosition = 0;}
+		if(scrollPosition > canCraft.size() -1) {scrollPosition = canCraft.size() -1;}
 	}
 
 
@@ -128,7 +130,7 @@ public class Crafting {
 	public void scroll(MouseWheelEvent e) {
 		int reqC = 3;
 		sClicks = sClicks + e.getWheelRotation();
-		if(sClicks/e.getWheelRotation() < 0) {
+		if(e.getWheelRotation() != 0 && sClicks/e.getWheelRotation() < 0) {
 			sClicks = 0;
 		}
 		if(sClicks >= reqC) {
@@ -143,4 +145,23 @@ public class Crafting {
 		if(scrollPosition > canCraft.size() -1) {scrollPosition = canCraft.size() -1;}
 	}
 	
+	public void craft() {
+		if(scrollPosition >= 0) {
+			Recipe r = canCraft.get(scrollPosition);
+			int[][] ings = r.getIngredients();
+			for(int[] ing: ings) {
+				inv.removeItem(ing[0], ing[1]);
+			}
+			inv.addItem(r.getItem());
+			
+			for(int i = 0; i < canCraft.size(); i++) {
+				if(!r.hasIngredients(inv)) {
+					canCraft.remove(scrollPosition);
+					i--;
+				}
+			
+			}
+		}
+	}
+
 }

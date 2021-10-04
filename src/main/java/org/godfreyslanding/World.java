@@ -44,7 +44,7 @@ public class World {
 		spawnY = w.getSpawnY();
 		myPlayer = new Player(1000,spawnY,2,4,v2, Color.BLUE, this.frame);
 		Item p = new StoneP();
-		p.setAmount(10000);
+		p.setAmount(5);
 		myPlayer.getInventory().addItem(p);
 		Item t = new TorchP();
 		t.setAmount(50);
@@ -314,6 +314,7 @@ public class World {
          }
         if(e.getKeyCode() == KeyEvent.VK_I){
         	showCM = !showCM;
+        	myPlayer.getCraft().getOptions();
         }
 	
 	}
