@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
@@ -597,6 +596,7 @@ public class World {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		Point fP = frame.getLocation();
 		int top = frame.getInsets().top;
+		// TODO fP.x is an integer to fP.x is integer devision... Did we we wnat floating ppint casted?
 		int px = ((p.x)/10 + (int)(myPlayer.getX()) - width/20 )/2 -(int)fP.x/20;
 		int py = ((p.y - top)/10 + (int)(myPlayer.getY()) - height/20)/2 - (int)fP.y/20;
 		Point mP = new Point(px,py);

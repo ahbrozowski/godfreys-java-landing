@@ -2,7 +2,6 @@ package org.godfreyslanding;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 public class Sword extends Item {
 	static Vector knockback = new Vector(.4,-.4); 

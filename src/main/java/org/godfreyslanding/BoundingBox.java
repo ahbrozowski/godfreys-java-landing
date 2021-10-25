@@ -12,6 +12,7 @@ public class BoundingBox {
 	}
 	
 	public void update(int x,int y) {
+	    // TODO No need to case these.  This is code is duplicated in bouding Rect
 		leftEdge = (int)(x - size);
 		rightEdge = (int)(x + size+1);
 		top = (int)(y - size);
