@@ -16,8 +16,8 @@ import javax.swing.JFrame;
 
 public class Crafting {
 	
-	ArrayList<Recipe> recipes = new ArrayList<Recipe>();
-	ArrayList<Recipe> canCraft = new ArrayList<Recipe>();
+	ArrayList<Recipe> recipes = new ArrayList<>();
+	ArrayList<Recipe> canCraft = new ArrayList<>();
 	Inventory inv;
 	int width = 600;
 	int height = 400;

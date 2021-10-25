@@ -13,6 +13,7 @@ public abstract class Biome {
 		this.y = y;
 		this.width = width;
 		this.height = height;
+		// TODO Ask Andrew monsters is not passed in this assigning the field to iteslf
 		this.monsters = monsters;
 		this.priority = priority;
 		

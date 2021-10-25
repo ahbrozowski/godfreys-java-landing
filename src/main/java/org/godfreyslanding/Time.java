@@ -32,7 +32,7 @@ public class Time {
 	public static int getDayLength() {
 		return DAYLENGTH;
 	}
-	public double getHour() {;
+	public double getHour() {
 	
 		double c = DAYLENGTH/24.0;
 		double h = timeDay/c;

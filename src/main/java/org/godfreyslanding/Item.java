@@ -16,7 +16,7 @@ public class Item {
 	int count = 0;
 	boolean draw = false;
 	String name;
-	Boolean material;
+	boolean material;
 	public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, Vector knockback, Color color, int light, String name, boolean material) {
 		this.stackable = stackable;
 		this.code = code;

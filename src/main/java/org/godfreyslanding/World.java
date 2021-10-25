@@ -39,7 +39,7 @@ public class World {
 		this.frame = frame;
 		biomes = w.getBiomes();
 		blocks = w.getBlocks();
-		entities = new ArrayList<Entity>();
+		entities = new ArrayList<>();
 		Vector v2 = new Vector(0,0);
 		spawnY = w.getSpawnY();
 		myPlayer = new Player(1000,spawnY,2,4,v2, Color.BLUE, this.frame);
@@ -168,7 +168,7 @@ public class World {
 	public void draw(Graphics2D g, int width, int height) {
 		
 		int globalLightValue = calcGlobeLight();
-		ArrayList<Body> ls = new ArrayList<Body>(); 
+		ArrayList<Body> ls = new ArrayList<>(); 
 		ls.add(myPlayer);
 		this.g = g;
 		this.width = width;

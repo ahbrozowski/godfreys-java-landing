@@ -16,7 +16,7 @@ public class Sword extends Item {
 		boolean colided = this.colidsEntity(e, x, y);
 		if(colided) {
 			e.setHealth(e.getHealth()-damage);
-			e.getVelocity().addVector(knockback);;
+			e.getVelocity().addVector(knockback);
 			e.setStunned(true);
   			if(!lr) {
   				e.getVelocity().xReflect();

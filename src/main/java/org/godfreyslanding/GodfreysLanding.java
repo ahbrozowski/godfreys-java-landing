@@ -43,7 +43,7 @@ public class GodfreysLanding extends JPanel{
 		frame.setTitle("Godfrey's Landing");
 		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);;
+		frame.add(this);
 		frame.setVisible(true);
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		frame.addKeyListener(new KeyListener() {
