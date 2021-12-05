@@ -314,4 +314,9 @@ public class Player extends Body {
 	public Crafting getCraft() {
 		return this.craft;
 	}
+
+
+	public boolean isHoldingPickAxe() {
+		return this.toolbar.isHoldingPickAxe();
+	}
 }

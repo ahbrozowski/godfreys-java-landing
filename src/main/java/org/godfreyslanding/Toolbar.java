@@ -75,5 +75,17 @@ public class Toolbar {
 		removeItem(getItemSelected(), 1);
 	}
 
+	public boolean isHoldingPickAxe() {
+		int[] pickAxeCodes = {10};
+		boolean codeMatches = false;
+		Item item = getItems()[getItemSelected()];
+		for(int i = 0; i < pickAxeCodes.length; i++) {
+			if( item != null && item.getCode() == pickAxeCodes[i]) {
+				codeMatches = true;
+			}
+		}
+		return codeMatches;
+	}
+
 
 }

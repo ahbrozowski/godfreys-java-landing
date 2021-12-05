@@ -48,6 +48,7 @@ public class World {
 		Item t = new TorchP();
 		t.setAmount(50);
 		myPlayer.getInventory().addItem(new Sword());
+		myPlayer.getInventory().addItem(new PickAxe());
 		myPlayer.getInventory().addItem(t);
 		myPlayer.setSpawn(1000, spawnY);
 		System.out.print(spawnY);
@@ -335,11 +336,8 @@ public class World {
 			placing = true;
 		}
 		if(e.getButton() == 1) {
-			if (myPlayer.isHoldingWeapon()) {
-				swinging = true;
-			} else {
-				breaking = true;
-			}
+			swinging = true;
+			breaking = true;
 		}
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		if(((p.x)/10 + myPlayer.getX() - width/20) > myPlayer.getX()) {
@@ -362,29 +360,31 @@ public class World {
 	
 	
 	public void breakBlock() {
-		Point p = getMouseP();
-		int px = p.x;
-		int py = p.y;
-		boolean xfits = (px >= 0) && (px < blocks.length);
-		boolean yfits = (py >= 0) && (py < blocks[0].length);
-		//System.out.println(x + " " + y);
-		if(xfits && yfits) {
-			Body b = blocks[px][py];
-			if(!b.getAir()) {
-				if(b.getHealth() == 0) {
-					Vector v2 = new Vector(0,0);
-					blocks[px][py] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
-					for(Biome biome: biomes) {
-						if(biome.containsBody(b)) {
-							blocks[px][py] = biome.getSkyBlock(b.getX(),b.getY()); 
+		if(myPlayer.isHoldingPickAxe()) {
+			Point p = getMouseP();
+			int px = p.x;
+			int py = p.y;
+			boolean xfits = (px >= 0) && (px < blocks.length);
+			boolean yfits = (py >= 0) && (py < blocks[0].length);
+			//System.out.println(x + " " + y);
+			if(xfits && yfits) {
+				Body b = blocks[px][py];
+				if(!b.getAir()) {
+					if(b.getHealth() == 0) {
+						Vector v2 = new Vector(0,0);
+						blocks[px][py] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
+						for(Biome biome: biomes) {
+							if(biome.containsBody(b)) {
+								blocks[px][py] = biome.getSkyBlock(b.getX(),b.getY()); 
+							}
 						}
+						myPlayer.getInventory().addItem(b.item(1));
+					} else {
+						b.setHealth(b.getHealth() - 1);
 					}
-					myPlayer.getInventory().addItem(b.item(1));
-				} else {
-					b.setHealth(b.getHealth() - 1);
 				}
-			}
-		}	
+			}	
+		}
 	}
 	
 	public void placeBlock() {
@@ -403,6 +403,7 @@ public class World {
 			if(xfits && yfits && !clickedOnPlayer) {
 				Body b = blocks[px][py];
 				if(b.getAir()) {
+					swinging = true;
 					blocks[px][py] = myPlayer.getSelectedItem().place(2*(px), 2*(py));
 					myPlayer.removeSelectedItem();
 				}

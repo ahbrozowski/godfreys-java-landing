@@ -73,10 +73,27 @@ public class Item {
 		
 	}
 	public boolean colidsEntity(Entity e, double x, double y) {
-		return false;
-		
+		double xDist = Math.abs(x - e.getX());
+		double yDist = Math.abs(y - e.getY());
+		double xMax = Math.abs(this.width/2 + e.getWidth()/2);
+		double yMax = Math.abs(this.height/2 + e.getHeight()/2);
+		if(xDist <= xMax && yDist <= yMax) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	public void useItem(Entity e, double x, double y, Graphics2D g, boolean lr) {
+		boolean colided = this.colidsEntity(e, x, y);
+		if(colided) {
+			e.setHealth(e.getHealth()-damage);
+			e.getVelocity().addVector(knockback);
+			e.setStunned(true);
+  			if(!lr) {
+  				e.getVelocity().xReflect();
+  			}
+	
+		}
 	}
 	
 	public void countUp() {
@@ -105,4 +122,5 @@ public class Item {
 	public String getName() {
 		return name;
 	}
+	
 }
