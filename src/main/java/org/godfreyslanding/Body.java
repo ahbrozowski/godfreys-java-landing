@@ -21,7 +21,7 @@ public class Body {
 	int darkLevels = 0;
 	boolean gl;
 	BoundingBox bBox;
-	public Body(double x, double y, double width, double height, Vector velocity, Color color, Boolean air, int health, int light, boolean gl) {
+	public Body(double x, double y, double width, double height, Vector velocity, Color color, boolean air, int health, int light, boolean gl) {
 		
 		this.x = x;
 		this.y = y;

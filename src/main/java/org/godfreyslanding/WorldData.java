@@ -7,7 +7,7 @@ public class WorldData {
 	Body[][] blocks;
 	int spawnY = 0;
 	Time t;
-	ArrayList<Biome> biomes = new ArrayList<Biome>();
+	ArrayList<Biome> biomes = new ArrayList<>();
 	public WorldData(Body[][] blocks) {
 		t = new Time();
 		this.blocks = blocks;
@@ -19,7 +19,7 @@ public class WorldData {
 	}
 
 	public void worldGen() {
-		ArrayList<Double> vals = new ArrayList<Double>();
+		ArrayList<Double> vals = new ArrayList<>();
 		biomes.add(new Overworld(0,0, blocks.length, 100));
 		for(int x = 0; x < blocks.length; x++) {
 			

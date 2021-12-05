@@ -1,23 +1,18 @@
 package org.godfreyslanding;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -43,7 +38,7 @@ public class GodfreysLanding extends JPanel{
 		frame.setTitle("Godfrey's Landing");
 		frame.setSize(WIDTH, HEIGHT + TITLE_BAR_HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);;
+		frame.add(this);
 		frame.setVisible(true);
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		frame.addKeyListener(new KeyListener() {

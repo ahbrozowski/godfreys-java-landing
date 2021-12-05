@@ -2,7 +2,6 @@ package org.godfreyslanding;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 public class Sword extends Item {
 	static Vector knockback = new Vector(.4,-.4); 
@@ -16,7 +15,7 @@ public class Sword extends Item {
 		boolean colided = this.colidsEntity(e, x, y);
 		if(colided) {
 			e.setHealth(e.getHealth()-damage);
-			e.getVelocity().addVector(knockback);;
+			e.getVelocity().addVector(knockback);
 			e.setStunned(true);
   			if(!lr) {
   				e.getVelocity().xReflect();
