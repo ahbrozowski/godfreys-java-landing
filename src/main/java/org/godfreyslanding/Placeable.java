@@ -13,7 +13,7 @@ public class Placeable extends Item {
 	@Override
 	public Body place(int x, int y) {
 		Vector v2 = new Vector(0,0);
-		return new Body(x,y,2,2,v2,Color.RED, false, 10,0, false);
+		return new Body(x,y,2,2,v2,Color.RED, false, 10,0, false, 1);
 	}
 
 }

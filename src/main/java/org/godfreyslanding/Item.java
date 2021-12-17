@@ -17,7 +17,8 @@ public class Item {
 	boolean draw = false;
 	String name;
 	boolean material;
-	public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, Vector knockback, Color color, int light, String name, boolean material) {
+	ItemsBlocks ib = new ItemsBlocks();
+		public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, Vector knockback, Color color, int light, String name, boolean material) {
 		this.stackable = stackable;
 		this.code = code;
 		this.weapon = weapon;
@@ -60,8 +61,7 @@ public class Item {
 	}
 	
 	public Body place(int x, int y) {
-		Vector v2 = new Vector(0,0);
-		return new Body(x,y,2,2,v2,Color.GREEN, false, 10, 0, false);
+		return ib.blocksFromCode(code, x, y);
 	}
 		
 	@Override

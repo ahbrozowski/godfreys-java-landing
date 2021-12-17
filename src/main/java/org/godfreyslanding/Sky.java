@@ -5,7 +5,7 @@ import java.awt.Color;
 public class Sky extends Body {
 
 	public Sky(double x, double y) {
-		super(x, y, 2, 2, new Vector(0,0), Color.CYAN, true, 0, 8, true);
+		super(x, y, 2, 2, new Vector(0,0), Color.CYAN, true, 0, 8, true, 0);
 		// TODO Auto-generated constructor stub
 	}
 	

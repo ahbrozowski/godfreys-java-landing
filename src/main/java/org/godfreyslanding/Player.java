@@ -28,7 +28,7 @@ public class Player extends Body {
 
 
 	public Player(double x, double y, double width, double height, Vector velocity, Color color, JFrame frame) {
-		super(x, y, width, height, velocity, color, false, 100, 9, false);
+		super(x, y, width, height, velocity, color, false, 100, 9, false, -1);
 		toolbar = new Toolbar();
 		inventory = new Inventory(toolbar, new Item[20]);
 		maxHealth = 100.0;

@@ -372,7 +372,7 @@ public class World {
 				if(!b.getAir()) {
 					if(b.getHealth() == 0) {
 						Vector v2 = new Vector(0,0);
-						blocks[px][py] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
+						blocks[px][py] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false, -1);
 						for(Biome biome: biomes) {
 							if(biome.containsBody(b)) {
 								blocks[px][py] = biome.getSkyBlock(b.getX(),b.getY()); 

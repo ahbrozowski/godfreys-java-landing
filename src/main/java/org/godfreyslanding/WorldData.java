@@ -51,7 +51,7 @@ public class WorldData {
 					}
 				 }else {
 					if(Math.abs(r2) <  .4 || Math.abs(r2) > 2) {
-						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false);
+						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false, 0);
 						if(biomes.get(0).containsBody(blocks[x][y])) {
 							blocks[x][y] = biomes.get(0).getSkyBlock(2*x,2*y);
 						}
@@ -61,7 +61,7 @@ public class WorldData {
 						blocks[x][y] = new StoneB(2*x,2*y);
 					} 
 					else {
-						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.RED, false, 10, 0, false);
+						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.RED, false, 10, 0, false, 1);
 					}
 				}
 			}

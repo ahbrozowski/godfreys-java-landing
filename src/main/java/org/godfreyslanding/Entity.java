@@ -8,7 +8,7 @@ public class Entity extends Body {
 	Vector knockback;
 	Player p;
 	public Entity(double x, double y, double width, double height, Vector velocity, Color color,int health, int damage, Vector knockback, int light, Player p) {
-		super(x, y, width, height, velocity, color,false, health, light,false);
+		super(x, y, width, height, velocity, color,false, health, light,false, -1);
 		this.knockback = knockback;
 		this.damage = damage;
 		this.p = p;

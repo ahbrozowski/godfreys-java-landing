@@ -21,7 +21,8 @@ public class Body {
 	int darkLevels = 0;
 	boolean gl;
 	BoundingBox bBox;
-	public Body(double x, double y, double width, double height, Vector velocity, Color color, boolean air, int health, int light, boolean gl) {
+	ItemsBlocks ib = new ItemsBlocks();
+	public Body(double x, double y, double width, double height, Vector velocity, Color color, boolean air, int health, int light, boolean gl, int code) {
 		
 		this.x = x;
 		this.y = y;
@@ -36,6 +37,7 @@ public class Body {
 		s = new Shadow(x,y, 8);
 		this.gl = gl;
 		bBox = new BoundingBox(5,(int)(this.x/2),(int)(this.y/2));
+		this.code = code;
 	}
 	
 
@@ -261,7 +263,10 @@ public class Body {
 		this.color = color;
 	}
 	public Item item(int n) {
-		Item p = new Placeable(true);
+		Item p = ib.itemFromCode(this.code);
+		if(p == null) {
+			return p;
+		}
 		p.setAmount(n);
 		return p;
 	}
