@@ -2,7 +2,7 @@ package org.godfreyslanding;
 
 import java.awt.Color;
 
-public class ItemsBlocks {2
+public class ItemsBlocks {
 
 	public ItemsBlocks() {
 			
