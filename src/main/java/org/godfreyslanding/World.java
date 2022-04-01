@@ -55,15 +55,32 @@ public class World {
 	
 	public static void saveWorld(World world, Path filePath) throws IOException {
 	    try (DataOutputStream out = output(filePath)) {
-	        out.writeByte(72);
+	        out.writeInt(world.spawnY);
+	        out.writeInt(world.blocks.length);
+	        out.writeInt(world.blocks[0].length);
+	        for(int i = 0; i < world.blocks.length; i++) {
+	            for(int j = 0; j < world.blocks[i].length; j++) {
+	                int code = world.blocks[i][j].code;
+	                out.writeByte(code);
+	            }
+	        }
+	        
 	    }
 	}
 	
-	public static World loadWorld(Path filePath) throws IOException {
+	public static World loadWorld(Path filePath, JFrame frame) throws IOException {
 	    try (DataInputStream in = input(filePath)) {
-	        byte b = in.readByte();
-	        Body[][] blocks = new Body[1000][1000];
-	        return null;
+	        int spawnY = in.readInt();
+	        int xLength = in.readInt();
+	        int yLength = in.readInt();
+	        byte[][] codes = new byte[xLength][xLength];
+	        for(int i = 0; i < xLength; i++) {
+	            for(int j = 0; j < yLength; j++) {
+	                codes[i][j] = in.readByte();
+	            }
+	        }
+	        WorldData w = new WorldData(spawnY, codes);
+	        return new World(w, frame);
 	    }
 	}
 	

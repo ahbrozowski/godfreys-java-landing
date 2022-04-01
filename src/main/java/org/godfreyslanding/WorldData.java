@@ -12,6 +12,21 @@ public class WorldData {
 		t = new Time();
 		this.blocks = blocks;
 	}
+	
+	public WorldData(int spawnY, byte[][] codes) {
+	    Body[][] blocks = new Body[codes.length][codes[0].length];
+	    biomes.add(new Overworld(0,0, codes.length, 100));
+	    for(int x = 0; x < codes.length; x++) {
+	        for(int y = 0; y < codes.length; y++) {
+	            int code = codes[x][y];
+	            blocks[x][y] = code == 0 ? makeSkyBlock(2*x, 2*y) : Body.fromCode(code, 2*x, 2*y);
+	        }
+	    }
+	    this.blocks = blocks;
+	    this.t = new Time();
+	    this.spawnY = spawnY;
+
+	}
 
 	public Body[][] getBlocks() {
 		return blocks;
@@ -50,10 +65,7 @@ public class WorldData {
 					}
 				 }else {
 					if(Math.abs(r2) <  .4 || Math.abs(r2) > 2) {
-						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false, 0);
-						if(biomes.get(0).containsBody(blocks[x][y])) {
-							blocks[x][y] = biomes.get(0).getSkyBlock(2*x,2*y);
-						}
+					    blocks[x][y] = makeSkyBlock(2*x, 2*y);
 						//System.out.println(x + " " + y);
 					} else if(Math.abs(stone) < .5) {
 						//System.out.println(x + " " + y);
@@ -72,6 +84,14 @@ public class WorldData {
 		System.out.println(vals.size());
 		System.out.println(" ");
 	}
+
+    private Body makeSkyBlock(int x2, int y2) {
+        Body block = new Body(x2,y2,2,2,new Vector(0,0),Color.LIGHT_GRAY, true, 0, 0, false, 0);
+        if(biomes.get(0).containsBody(block)) {
+        	block = biomes.get(0).getSkyBlock(x2,y2);
+        }
+        return block;
+    }
 	
 	double fade(double t) {
 		return t*t*t*(t*(t*6.0 -15.0) +10);
