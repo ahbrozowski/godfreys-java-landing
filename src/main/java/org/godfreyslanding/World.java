@@ -8,7 +8,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.GZIPInputStream;
 
 import javax.swing.JFrame;
 
@@ -33,7 +44,30 @@ public class World {
 	boolean showCM = false;
 	boolean showCursor = false;
 	JFrame frame;
-	ItemsBlocks ib = new ItemsBlocks();
+	
+    public static DataOutputStream output(Path filePath) throws IOException {
+        return new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(filePath.toFile()))));
+    }
+	    
+    public static DataInputStream input(Path filePath) throws IOException {
+            return new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(filePath.toFile()))));
+    }
+	
+	public static void saveWorld(World world, Path filePath) throws IOException {
+	    try (DataOutputStream out = output(filePath)) {
+	        out.writeByte(72);
+	    }
+	}
+	
+	public static World loadWorld(Path filePath) throws IOException {
+	    try (DataInputStream in = input(filePath)) {
+	        byte b = in.readByte();
+	        Body[][] blocks = new Body[1000][1000];
+	        return null;
+	    }
+	}
+	
+	
 	
 	public World(WorldData w, JFrame frame) {
 		this.frame = frame;
@@ -43,13 +77,13 @@ public class World {
 		Vector v2 = new Vector(0,0);
 		spawnY = w.getSpawnY();
 		myPlayer = new Player(1000,spawnY,2,4,v2, Color.BLUE, this.frame);
-		Item p = ib.itemFromCode(2);
+		Item p = Item.fromCode(2);
 		p.setAmount(5);
 		myPlayer.getInventory().addItem(p);
-		Item t = ib.itemFromCode(4);
+		Item t = Item.fromCode(4);
 		t.setAmount(50);
-		myPlayer.getInventory().addItem(ib.itemFromCode(3));
-		myPlayer.getInventory().addItem(ib.itemFromCode(10));
+		myPlayer.getInventory().addItem(Item.fromCode(3));
+		myPlayer.getInventory().addItem(Item.fromCode(10));
 		myPlayer.getInventory().addItem(t);
 		myPlayer.setSpawn(1000, spawnY);
 		System.out.print(spawnY);

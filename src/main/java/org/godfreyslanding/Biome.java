@@ -5,7 +5,7 @@ public abstract class Biome {
 	int y;
 	int width;
 	int height;
-	Entity[] monsters;
+	//Entity[] monsters;
 	int priority;
 	public Biome(int x, int y, int width, int height, int priority) {
 		super();
@@ -14,7 +14,7 @@ public abstract class Biome {
 		this.width = width;
 		this.height = height;
 		// TODO Ask Andrew monsters is not passed in this assigning the field to iteslf
-		this.monsters = monsters;
+		//this.monsters = monsters;
 		this.priority = priority;
 		
 	}

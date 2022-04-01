@@ -32,6 +32,7 @@ public class GodfreysLanding extends JPanel{
 	Canvas canvas;
 	public GodfreysLanding() {
 		w = new WorldData(new Body[1000][1000]);
+		w.worldGen();
 		frame = new JFrame();
 		world = new World(w,frame);
 		this.setSize(WIDTH, HEIGHT);
