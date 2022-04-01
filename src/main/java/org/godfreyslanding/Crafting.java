@@ -25,14 +25,15 @@ public class Crafting {
 	MyButton craft;
 	MyButton up;
 	MyButton down;
-
+	ItemsBlocks ib;
 
 	public Crafting(JFrame frame, Inventory inv) {
 		super();
 		this.inv = inv;
 		this.frame = frame;
 		int[][] i = {{2,1}};
-		recipes.add(new Recipe(i, new TorchP()));
+		ib  = new ItemsBlocks();
+		recipes.add(new Recipe(i, ib.itemFromCode(4)));
 		craft = new MyButton(100, 100, 200, 100, Color.WHITE, frame);
 		up = new MyButton(120, 60, 100, 40, Color.BLUE,frame);
 		down = new MyButton(120, 60, 100, 40, Color.RED,frame);

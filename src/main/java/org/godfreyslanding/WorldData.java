@@ -19,6 +19,7 @@ public class WorldData {
 	}
 
 	public void worldGen() {
+		ItemsBlocks ib = new ItemsBlocks();
 		ArrayList<Double> vals = new ArrayList<>();
 		biomes.add(new Overworld(0,0, blocks.length, 100));
 		for(int x = 0; x < blocks.length; x++) {
@@ -58,10 +59,10 @@ public class WorldData {
 						//System.out.println(x + " " + y);
 					} else if(Math.abs(stone) < .5) {
 						//System.out.println(x + " " + y);
-						blocks[x][y] = new StoneB(2*x,2*y);
+						blocks[x][y] = ib.blocksFromCode(2,2*x,2*y);
 					} 
 					else {
-						blocks[x][y] = new Body(2*x,2*y,2,2,v2,Color.RED, false, 10, 0, false, 1);
+						blocks[x][y] = ib.blocksFromCode(8,2*x,2*y);
 					}
 				}
 			}

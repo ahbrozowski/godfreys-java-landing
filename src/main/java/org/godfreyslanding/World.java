@@ -33,6 +33,7 @@ public class World {
 	boolean showCM = false;
 	boolean showCursor = false;
 	JFrame frame;
+	ItemsBlocks ib = new ItemsBlocks();
 	
 	public World(WorldData w, JFrame frame) {
 		this.frame = frame;
@@ -42,13 +43,13 @@ public class World {
 		Vector v2 = new Vector(0,0);
 		spawnY = w.getSpawnY();
 		myPlayer = new Player(1000,spawnY,2,4,v2, Color.BLUE, this.frame);
-		Item p = new StoneP();
+		Item p = ib.itemFromCode(2);
 		p.setAmount(5);
 		myPlayer.getInventory().addItem(p);
-		Item t = new TorchP();
+		Item t = ib.itemFromCode(4);
 		t.setAmount(50);
-		myPlayer.getInventory().addItem(new Sword());
-		myPlayer.getInventory().addItem(new PickAxe());
+		myPlayer.getInventory().addItem(ib.itemFromCode(3));
+		myPlayer.getInventory().addItem(ib.itemFromCode(10));
 		myPlayer.getInventory().addItem(t);
 		myPlayer.setSpawn(1000, spawnY);
 		System.out.print(spawnY);
