@@ -115,9 +115,10 @@ public class GodfreysLanding extends JPanel{
 	
 	
 	private void tick() {
-		world.update(MILLIS_PER_FRAME/1000.0f);
-		this.repaint();
-		
+		javax.swing.SwingUtilities.invokeLater( () -> {
+			world.update(MILLIS_PER_FRAME/1000.0f);
+			this.repaint();	
+		});
 	}	
 	
 	@Override
@@ -155,7 +156,6 @@ public class GodfreysLanding extends JPanel{
 	
 	public static void main(String[] args) throws InterruptedException {
 		new GodfreysLanding();
-		Thread.sleep(1000000);
 	}
 
 }
