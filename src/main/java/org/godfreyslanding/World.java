@@ -12,11 +12,13 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -44,6 +46,18 @@ public class World {
 	boolean showCM = false;
 	boolean showCursor = false;
 	JFrame frame;
+	
+	public static void main(String[] args) throws IOException {
+	    WorldData w = new WorldData(new Body[1000][1000]);
+	    w.worldGen();
+	    
+	    World world = new World(w, null);
+	    
+	    Path f = new File("world.sav.gz").toPath();
+	    System.out.println("Saving world to "+f.toAbsolutePath());
+	    
+	    World.saveWorld(world, f);
+	}
 	
     public static DataOutputStream output(Path filePath) throws IOException {
         return new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(filePath.toFile()))));
