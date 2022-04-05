@@ -105,7 +105,7 @@ public class World {
 		biomes = w.getBiomes();
 		blocks = w.getBlocks();
 		entities = new ArrayList<>();
-		Vector v2 = new Vector(0,0);
+		MyVector v2 = new MyVector(0,0);
 		spawnY = w.getSpawnY();
 		myPlayer = new Player(1000,spawnY,2,4,v2, Color.BLUE, this.frame);
 		Item p = Item.fromCode(2);
@@ -437,7 +437,7 @@ public class World {
 				Body b = blocks[px][py];
 				if(!b.getAir()) {
 					if(b.getHealth() == 0) {
-						Vector v2 = new Vector(0,0);
+						MyVector v2 = new MyVector(0,0);
 						blocks[px][py] = new Body(b.getX(),b.getY(),2,2,v2,Color.LIGHT_GRAY, true, 0, 0, false, -1);
 						for(Biome biome: biomes) {
 							if(biome.containsBody(b)) {

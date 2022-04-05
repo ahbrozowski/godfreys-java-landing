@@ -8,14 +8,14 @@ public class Body {
     
     public static Body fromCode(int code, int x, int y) {
         switch(code) {
-            case 1: return new Body(x, y, 2, 2, new Vector(0,0), Color.RED, false, 10,0, false, 1);
-            case 2: return new Body(x, y, 2, 2, new Vector(0,0), Color.darkGray, false, 15, 0, false, 2);
-            case 4: return new Body(x, y, 2, 2, new Vector(0,0), Color.WHITE, false, 1, 20, false, 4);
-            case 5: return new Body(x, y, 2, 2, new Vector(0,0), new Color(101,67,33), false, 10, 0, false, 5);
-            case 6: return new Body(x, y, 2, 2, new Vector(0,0), new Color(167,41,6), false, 20, 0, false, 6);
-            case 7: return new Body(x, y, 2, 2, new Vector(0,0), new Color(5,65,0), false, 15, 0, false, 7);
-            case 8: return new Body(x, y, 2, 2, new Vector(0,0), new Color(155, 118, 83), false, 5, 0, false, 8);
-            case 9: return new Body(x, y, 2, 2, new Vector(0,0), new Color(128, 0, 0), false, 15, 0, false, 9);
+            case 1: return new Body(x, y, 2, 2, new MyVector(0,0), Color.RED, false, 10,0, false, 1);
+            case 2: return new Body(x, y, 2, 2, new MyVector(0,0), Color.darkGray, false, 15, 0, false, 2);
+            case 4: return new Body(x, y, 2, 2, new MyVector(0,0), Color.WHITE, false, 1, 20, false, 4);
+            case 5: return new Body(x, y, 2, 2, new MyVector(0,0), new Color(101,67,33), false, 10, 0, false, 5);
+            case 6: return new Body(x, y, 2, 2, new MyVector(0,0), new Color(167,41,6), false, 20, 0, false, 6);
+            case 7: return new Body(x, y, 2, 2, new MyVector(0,0), new Color(5,65,0), false, 15, 0, false, 7);
+            case 8: return new Body(x, y, 2, 2, new MyVector(0,0), new Color(155, 118, 83), false, 5, 0, false, 8);
+            case 9: return new Body(x, y, 2, 2, new MyVector(0,0), new Color(128, 0, 0), false, 15, 0, false, 9);
         }
         return null;
     }
@@ -24,7 +24,7 @@ public class Body {
 	double y;
 	double width;
 	double height;
-	Vector velocity;
+	MyVector velocity;
 	static boolean theFix;
 	Color color;
 	boolean air;
@@ -36,7 +36,7 @@ public class Body {
 	int darkLevels = 0;
 	boolean gl;
 	BoundingBox bBox;
-	public Body(double x, double y, double width, double height, Vector velocity, Color color, boolean air, int health, int light, boolean gl, int code) {
+	public Body(double x, double y, double width, double height, MyVector velocity, Color color, boolean air, int health, int light, boolean gl, int code) {
 		
 		this.x = x;
 		this.y = y;
@@ -265,12 +265,12 @@ public class Body {
 	}
 
 
-	public Vector getVelocity() {
+	public MyVector getVelocity() {
 		return velocity;
 	}
 	
 
-	public void setVelocity(Vector velocity) {
+	public void setVelocity(MyVector velocity) {
 		this.velocity = velocity;
 	}
 	public void setColor( Color color) {

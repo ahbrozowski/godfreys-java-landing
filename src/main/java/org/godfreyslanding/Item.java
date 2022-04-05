@@ -7,16 +7,16 @@ public class Item {
     
     public static Item fromCode(int code) {
         switch(code) {
-            case 1: return new Item(true, 1, false, 0, 1, 1, new Vector(0,0), Color.RED, 0, "placeable", true);
-            case 2: return new Item(true, 2, false, 0, 1, 1, new Vector(0,0), Color.DARK_GRAY, 0, "stone", true);
-            case 3: return new Item(false, 3, true, 10, 3, 3, new Vector(.4,-.4), Color.LIGHT_GRAY, 0, "sword", false);
-            case 4: return new Item(true, 4, false, 0, 1, 1, new Vector(0,0), Color.WHITE, 0, "torch", false);
-            case 5: return new Item(true, 5, false, 0, 1, 1, new Vector(0,0), new Color(101,67,33), 0, "wood", true);
-            case 6: return new Item(true, 6, false, 0, 1, 1, new Vector(0,0), new Color(167,41,6), 0, "iron ore", true);
-            case 7: return new Item(true, 7, false, 0, 1, 1, new Vector(0,0), new Color(5,65,0), 0, "grass", true);
-            case 8: return new Item(true, 8, false, 0, 1, 1, new Vector(0,0), new Color(155, 118, 83), 0, "dirt", true);
-            case 9: return new Item(true, 9, false, 0, 1, 1, new Vector(0,0), new Color(128, 0, 0), 0, "work bench", true);
-            case 10: return new Item(false, 10, true, 3, 3, 3, new Vector(.6,-.6), Color.ORANGE , 0, "pickaxe", false);
+            case 1: return new Item(true, 1, false, 0, 1, 1, new MyVector(0,0), Color.RED, 0, "placeable", true);
+            case 2: return new Item(true, 2, false, 0, 1, 1, new MyVector(0,0), Color.DARK_GRAY, 0, "stone", true);
+            case 3: return new Item(false, 3, true, 10, 3, 3, new MyVector(.4,-.4), Color.LIGHT_GRAY, 0, "sword", false);
+            case 4: return new Item(true, 4, false, 0, 1, 1, new MyVector(0,0), Color.WHITE, 0, "torch", false);
+            case 5: return new Item(true, 5, false, 0, 1, 1, new MyVector(0,0), new Color(101,67,33), 0, "wood", true);
+            case 6: return new Item(true, 6, false, 0, 1, 1, new MyVector(0,0), new Color(167,41,6), 0, "iron ore", true);
+            case 7: return new Item(true, 7, false, 0, 1, 1, new MyVector(0,0), new Color(5,65,0), 0, "grass", true);
+            case 8: return new Item(true, 8, false, 0, 1, 1, new MyVector(0,0), new Color(155, 118, 83), 0, "dirt", true);
+            case 9: return new Item(true, 9, false, 0, 1, 1, new MyVector(0,0), new Color(128, 0, 0), 0, "work bench", true);
+            case 10: return new Item(false, 10, true, 3, 3, 3, new MyVector(.6,-.6), Color.ORANGE , 0, "pickaxe", false);
         }
         return null;
     }
@@ -29,13 +29,13 @@ public class Item {
 	int damage;
 	double width;
 	double height;
-	Vector knockback;
+	MyVector knockback;
 	int count = 0;
 	boolean draw = false;
 	String name;
 	boolean material;
 	
-	public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, Vector knockback, Color color, int light, String name, boolean material) {
+	public Item(boolean stackable, int code, boolean weapon, int damage, double width, double height, MyVector knockback, Color color, int light, String name, boolean material) {
 		this.stackable = stackable;
 		this.code = code;
 		this.weapon = weapon;

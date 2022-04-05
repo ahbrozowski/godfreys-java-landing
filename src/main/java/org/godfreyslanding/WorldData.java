@@ -56,7 +56,6 @@ public class WorldData {
 						noise2d(x * (1.0/18.75),y * (1.0/18.75),true) * .25;
 				
 				//System.out.println(r2d);
-				Vector v2 = new Vector(0,0);
 				if(y <= (n + 50)) {
 					blocks[x][y] = new Sky(2*x,2*y);
 					
@@ -86,7 +85,7 @@ public class WorldData {
 	}
 
     private Body makeSkyBlock(int x2, int y2) {
-        Body block = new Body(x2,y2,2,2,new Vector(0,0),Color.LIGHT_GRAY, true, 0, 0, false, 0);
+        Body block = new Body(x2,y2,2,2,new MyVector(0,0),Color.LIGHT_GRAY, true, 0, 0, false, 0);
         if(biomes.get(0).containsBody(block)) {
         	block = biomes.get(0).getSkyBlock(x2,y2);
         }
@@ -193,7 +192,6 @@ public class WorldData {
 		  /* Calculate final result */
 		  return (1.0 - fade_t1) * p0p1 + fade_t1 * p2p3;
 	}
-	
 	
 	
 	public double dot(double[] a, double[] b) {

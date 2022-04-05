@@ -1,9 +1,9 @@
 package org.godfreyslanding;
 
-public class Vector {
+public class MyVector {
 	double x;
 	double y;
-	public Vector(double x, double y) {
+	public MyVector(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -16,7 +16,7 @@ public class Vector {
 		y = -y;
 	}
 	
-	public void addVector(Vector v) {
+	public void addVector(MyVector v) {
 		this.x += v.getX();
 		this.y += v.getY();
 	}
@@ -35,7 +35,7 @@ public class Vector {
 	}
 	
 	public void gravity() {
-		Vector v = new Vector(0,.03);
+		MyVector v = new MyVector(0,.03);
 		
 		this.addVector(v);
 		

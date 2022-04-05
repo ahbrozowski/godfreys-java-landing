@@ -9,7 +9,7 @@ public class Zombie extends Entity {
 	int stunCount = 0;
 	boolean cantBeUnstunned = false;
 	public Zombie(double x, double y, Player p) {
-		super(x, y, 2, 2, new Vector(0,0), color, 50, 10, new Vector(.5,-.6), 3, p);
+		super(x, y, 2, 2, new MyVector(0,0), color, 50, 10, new MyVector(.5,-.6), 3, p);
 		// TODO Auto-generated constructor stub
 	}
 	

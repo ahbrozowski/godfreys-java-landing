@@ -5,9 +5,9 @@ import java.awt.Color;
 public class Entity extends Body {
 	boolean stunned = false;
 	int damage;
-	Vector knockback;
+	MyVector knockback;
 	Player p;
-	public Entity(double x, double y, double width, double height, Vector velocity, Color color,int health, int damage, Vector knockback, int light, Player p) {
+	public Entity(double x, double y, double width, double height, MyVector velocity, Color color,int health, int damage, MyVector knockback, int light, Player p) {
 		super(x, y, width, height, velocity, color,false, health, light,false, -1);
 		this.knockback = knockback;
 		this.damage = damage;
@@ -20,10 +20,10 @@ public class Entity extends Body {
 	public void setDamage(int damage) {
 		this.damage = damage;
 	}
-	public Vector getKnockback() {
+	public MyVector getKnockback() {
 		return knockback;
 	}
-	public void setKnockback(Vector knockback) {
+	public void setKnockback(MyVector knockback) {
 		this.knockback = knockback; 
 	}
 	

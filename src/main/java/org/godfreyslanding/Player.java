@@ -27,7 +27,7 @@ public class Player extends Body {
 	Crafting craft;
 
 
-	public Player(double x, double y, double width, double height, Vector velocity, Color color, JFrame frame) {
+	public Player(double x, double y, double width, double height, MyVector velocity, Color color, JFrame frame) {
 		super(x, y, width, height, velocity, color, false, 100, 9, false, -1);
 		toolbar = new Toolbar();
 		inventory = new Inventory(toolbar, new Item[20]);
