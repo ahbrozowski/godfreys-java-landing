@@ -61,11 +61,11 @@ public class WorldData {
 						noise2d(x * (1.0/18.75), y * (1.0/18.75),true) * .25;
 				
 				//System.out.println(r2d);
-				if(y <= (n + 50)) {
+				if(y <= (n + 200)) {
 					blocks[x][y] = new Sky(2*x,2*y);
 					
 				 }else {
-					if(r2 <  0) {
+					if(r2 <  0 && y > n + 250 ) {
 					    blocks[x][y] = makeSkyBlock(2*x, 2*y);
 						//System.out.println(x + " " + y);
 					} else if(stone > 0) {
@@ -101,8 +101,8 @@ public class WorldData {
 		
 	}
 	static double vals[] = new double[512];
-	static int vals2d[] = new int[1024];
-	static int ore[] = new int[1024];
+	static int vals2d[] = new int[4096];
+	static int ore[] = new int[4096];
 	static boolean init = false;
 	static boolean init2d = false;
 	double grad(double p, boolean isOre) {
@@ -167,12 +167,12 @@ public class WorldData {
 		int xi = (int) Math.floor(x) & 511;
     	int yi = (int) Math.floor(y) & 511;
     	if( init2d == false) {
-    		int[] temp = new int[512];
+    		int[] temp = new int[2047];
     		generateNonRepArray(temp);
 			for (int i=0; i < vals2d.length/2 -1 ; i++) { 
 				vals2d[vals2d.length/2+i] = vals2d[i] = temp[i];
     		}
-			int[] temp2 = new int[512];
+			int[] temp2 = new int[2047];
     		generateNonRepArray(temp2);
 			for (int i=0; i < ore.length/2 -1 ; i++) { 
 				ore[ore.length/2+i] = ore[i] = temp2[i];
