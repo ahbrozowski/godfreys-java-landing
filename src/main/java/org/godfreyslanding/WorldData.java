@@ -33,8 +33,10 @@ public class WorldData {
 	}
 
 	public void worldGen() {
+		
 		ArrayList<Double> vals = new ArrayList<>();
 		biomes.add(new Overworld(0,0, blocks.length, 100));
+		double avg = 0;
 		for(int x = 0; x < blocks.length; x++) {
 			
 			double r = (noise(x * (1.0/300.0),false) * 1.0 +
@@ -48,25 +50,25 @@ public class WorldData {
 			}
 			for(int y = 0; y < blocks[x].length; y++) {
 				
+				//System.out.print(noise2d(x,y,false)+ " ");
 				double r2 = noise2d(x * (1.0/75.0),y * (1.0/75.0),false) * 1.0 + 
 						noise2d(x * (1.0/37.5),y * (1.0/37.5),false) * .5 + 
 						noise2d(x * (1.0/18.75),y * (1.0/18.75),false) * .25;
+				
+				avg += Math.abs(r2);
 				double stone = noise2d(x * (1.0/75.0),y * (1.0/75.0),true) * 1.0 + 
 						noise2d(x * (1.0/37.5),y * (1.0/37.5),true) * .5 + 
-						noise2d(x * (1.0/18.75),y * (1.0/18.75),true) * .25;
+						noise2d(x * (1.0/18.75), y * (1.0/18.75),true) * .25;
 				
 				//System.out.println(r2d);
 				if(y <= (n + 50)) {
 					blocks[x][y] = new Sky(2*x,2*y);
 					
-					if(Math.abs(r2) > 2){
-						vals.add(Math.abs(r2));
-					}
 				 }else {
-					if(Math.abs(r2) <  .4 || Math.abs(r2) > 2) {
+					if(r2 <  0) {
 					    blocks[x][y] = makeSkyBlock(2*x, 2*y);
 						//System.out.println(x + " " + y);
-					} else if(Math.abs(stone) < .5) {
+					} else if(stone > 0) {
 						//System.out.println(x + " " + y);
 						blocks[x][y] = Body.fromCode(2, 2*x, 2*y);
 					} 
@@ -77,11 +79,13 @@ public class WorldData {
 			}
 			
 		}
+		
 		System.out.println(" ");
 		System.out.println(" ");
 		System.out.println(vals);
 		System.out.println(vals.size());
 		System.out.println(" ");
+		System.out.print(avg/1000000 + " ");
 	}
 
     private Body makeSkyBlock(int x2, int y2) {
@@ -97,17 +101,15 @@ public class WorldData {
 		
 	}
 	static double vals[] = new double[512];
-	static double ore[] = new double[512];
+	static int vals2d[] = new int[1024];
+	static int ore[] = new int[1024];
 	static boolean init = false;
+	static boolean init2d = false;
 	double grad(double p, boolean isOre) {
 		if( init == false) {
 			for(int i = 0; i < vals.length; i++) {
 				double r = 2* Math.random() -1; 
 				vals[i] = r < 0? -1.0:1.0;
-			}
-			for(int i = 0; i < ore.length; i++) {
-				double r = 2* Math.random() -1; 
-				ore[i] = r < 0? -1.0:1.0;
 			}
 			init = true;
 		}
@@ -134,69 +136,95 @@ public class WorldData {
 	} 
 	
 	
-	public double[] grad2d(double x, double y, boolean isOre) {
-		double[] vec;
-		if( init == false) {
-			for(int i = 0; i < vals.length; i++) {
-				double r = 2* Math.random() -1; 
-				vals[i] = r < 0? -1.0:1.0;
-			}
-			for(int i = 0; i < ore.length; i++) {
-				double r = 2* Math.random() -1; 
-				ore[i] = r < 0? -1.0:1.0;
-			}
-			init = true;
-		}
-		if(isOre) {
-			vec = new double[2];
-			vec[0] = ore[(int)x];
-			vec[1] = ore[(int)y];
-
-		} else {
-			
-			vec = new double[2];
-			vec[0] = vals[(int)x];
-			vec[1] = vals[(int)y];
-		}
-		return vec;
-		
+	public double grad2d(int g, double x, double y) {
+		//System.out.println(g+ " " + x + " " + y);
+		switch(g & 3){
+    	case 0: return x + y;
+    	case 1: return -x + y;
+    	case 2: return x - y;
+    	case 3: return -x - y;
+    	default: return 0;
+    	}
 			
 	}
 	
+	public static void generateNonRepArray(int[] a) {
+		
+		for(int i = 0; i < a.length; i++) {
+			boolean done = false;
+			while(!done) {
+				double rand = Math.random() * a.length;
+				if(a[(int)rand] == 0) {
+					a[(int)rand] = i;
+					done = true;
+				}
+			}
+		} System.out.println();
+	}
 	
 	public double noise2d(double x, double y, boolean isOre) {
-		  double[] p0 = {Math.floor(x), Math.floor(y)} ;
-		  double[] p1 = {1.0 + p0[0], 0.0 + p0[1]};
-		  double[] p2 = {0.0 + p0[0], 1.0 + p0[1]};
-		  double[] p3 = {1.0 + p0[0], 1.0 + p0[1]};
-		  double[] pp0 = {x - p0[0], y - p0[1]}; 
-		  double[] pp1 = {x - p1[0], y - p1[1]}; 
-		  double[] pp2 = {x - p2[0], y - p2[1]}; 
-		  double[] pp3 = {x - p3[0], y - p3[1]}; 
-		  /* Look up gradients at lattice points. */
-		  double[] g0 = grad2d(p0[0], p0[1], isOre);
-		  double[] g1 = grad2d(p1[0], p1[1], isOre);
-		  double[] g2 = grad2d(p2[0], p2[1], isOre);
-		  double[] g3 = grad2d(p3[0], p3[1], isOre);
-		    
-		  double t0 = x - p0[0];
-		  double fade_t0 = fade(t0); /* Used for interpolation in horizontal direction */
+		
+		int xi = (int) Math.floor(x) & 511;
+    	int yi = (int) Math.floor(y) & 511;
+    	if( init2d == false) {
+    		int[] temp = new int[512];
+    		generateNonRepArray(temp);
+			for (int i=0; i < vals2d.length/2 -1 ; i++) { 
+				vals2d[vals2d.length/2+i] = vals2d[i] = temp[i];
+    		}
+			int[] temp2 = new int[512];
+    		generateNonRepArray(temp2);
+			for (int i=0; i < ore.length/2 -1 ; i++) { 
+				ore[ore.length/2+i] = ore[i] = temp2[i];
+    		}
+			init2d = true;
+		}
+    	
+  
 
-		  double t1 = y - p0[1];
-		  double fade_t1 = fade(t1); /* Used for interpolation in vertical direction. */
-
-		  /* Calculate dot products and interpolate.*/
-		  double p0p1 = (1.0 - fade_t0) * dot(g0, (pp0)) + fade_t0 * dot(g1, (pp1)); /* between upper two lattice points */
-		  double p2p3 = (1.0 - fade_t0) * dot(g2, (pp2)) + fade_t0 * dot(g3, (pp3)); /* between lower two lattice points */
-		  
-		  /* Calculate final result */
-		  return (1.0 - fade_t1) * p0p1 + fade_t1 * p2p3;
+    	int g1;
+    	int g2;
+    	int g3;
+    	int g4; 
+    	if(isOre) {
+    		g1 = ore[ore[xi] + yi];
+    		g2 = ore[ore[xi + 1] + yi];
+    		g3 = ore[ore[xi] + yi + 1];
+    		g4 = ore[ore[xi + 1] + yi + 1];
+    	}
+    	else {
+    		g1 = vals2d[vals2d[xi] + yi];
+    		g2 = vals2d[vals2d[xi + 1] + yi];
+    		g3 = vals2d[vals2d[xi] + yi + 1];
+    		g4 = vals2d[vals2d[xi + 1] + yi + 1];
+    	}
+    	double xf = x - Math.floor(x);
+    	double yf = y - Math.floor(y);
+    	
+    	double d1 = grad2d(g1, xf, yf);
+    	double d2 = grad2d(g2, xf - 1, yf);
+    	double d3 = grad2d(g3, xf, yf - 1);
+    	double d4 = grad2d(g4, xf - 1, yf - 1);
+    	
+    	double u = fade(xf);
+    	double v = fade(yf);
+    	
+    	double x1Inter = lerp(u, d1, d2);
+    	double x2Inter = lerp(u, d3, d4);
+    	double yInter = lerp(v, x1Inter, x2Inter);
+    	
+    	return yInter;
 	}
 	
+	private static double lerp(double amount, double left, double right) {
+		return ((1 - amount) * left + amount * right);
+	}
 	
+
 	public double dot(double[] a, double[] b) {
 		return a[0] * b[0] + a[1] + b[1];
 	}
+	
 	
 	public void setBlocks(Body[][] blocks) {
 		this.blocks = blocks;

@@ -38,7 +38,21 @@ public class MyVector {
 		MyVector v = new MyVector(0,.03);
 		
 		this.addVector(v);
-		
+	}
+	
+	public MyVector floor() {
+		return new MyVector(Math.floor(this.x), Math.floor(this.y));
+	}
+	
+	public MyVector add(MyVector v) {
+		return new MyVector(this.x + v.getX(), this.y + v.getX());
+	}
+	public MyVector sub(MyVector v) {
+		return new MyVector(this.x - v.getX(), this.y - v.getX());
+	}
+	
+	public double dot(MyVector v) {
+		return this.x * v.getX() + this.y * v.getX();
 	}
 	
 	public void addX(double d) {
